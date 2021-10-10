@@ -15,7 +15,7 @@ namespace Benlumia007\Backdrop\Customize;
 use Benlumia007\Backdrop\Customize\Contracts\Customize as CustomizeContract;
 
 class Component implements CustomizeContract {
-    /**
+	/**
 	 * Register panels
 	 */
 	public function panels( $manager ) {}
