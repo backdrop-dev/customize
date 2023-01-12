@@ -1,11 +1,12 @@
 <?php
 /**
- * Backdrop Core ( src/Component/Customize.php )
+ * Customize component.
  *
- * @package   Backdrop Core
- * @copyright Copyright (C) 2019-2021. Benjamin Lu
- * @author    Benjamin Lu ( https://getbenonit.com )
+ * @package   Backdrop
+ * @author    Benjamin Lu <benlumia007@gmail.com>
+ * @copyright 2019-2023. Benjamin Lu
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
+ * @link      https://github.com/benlumia007/backdrop/fontawesome
  */
 
 /**
@@ -15,28 +16,64 @@ namespace Benlumia007\Backdrop\Customize;
 
 use Backdrop\Contracts\Bootable;
 
+use WP_Customize_Manager;
+
+/**
+ * Customize class.
+ *
+ * @since  1.0.0
+ * @access public
+ */
 class Component implements Bootable {
-	/**
-	 * Register panels
-	 */
-	public function panels( $manager ) {}
-	
-	/**
-	 * Register sections
-	 */
-	public function sections( $manager ) {}
 
-	/**
-	 * Register settings
-	 */
-	public function settings( $manager ) {}
+    /**
+     * Add our panels for customizer.
+     *
+     * @since  1.0.0
+     * @access public
+     * @param WP_Customize_Manager $manager
+     * @return void
+     */
+	public function panels( WP_Customize_Manager $manager ): void {}
 
-	/**
-	 * Register controls
-	 */
-	public function controls( $manager ) {}
+    /**
+     * Add our sections for customizer.
+     *
+     * @since  1.0.0
+     * @access public
+     * @param WP_Customize_Manager $manager
+     * @return void
+     */
+	public function sections( WP_Customize_Manager $manager ): void {}
 
-	public function boot() {
+    /**
+     * Add our settings for customizer.
+     *
+     * @since  1.0.0
+     * @access public
+     * @param WP_Customize_Manager $manager
+     * @return void
+     */
+	public function settings( WP_Customize_Manager $manager ): void {}
+
+    /**
+     * Add our controls for customizer.
+     *
+     * @since  1.0.0
+     * @access public
+     * @param WP_Customize_Manager $manager
+     * @return void
+     */
+	public function controls( WP_Customize_Manager $manager ): void {}
+
+    /**
+     * Sets up the customizer manager actions and filters.
+     *
+     * @since  1.0.0
+     * @access public
+     * @return void
+     */
+	public function boot(): void {
 		add_action( 'customize_register', [ $this, 'panels' ] );
 		add_action( 'customize_register', [ $this, 'sections' ] );
 		add_action( 'customize_register', [ $this, 'settings' ] );
