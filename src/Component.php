@@ -12,9 +12,10 @@
  * Define namespace
  */
 namespace Benlumia007\Backdrop\Customize;
-use Benlumia007\Backdrop\Customize\Contracts\Customize as CustomizeContract;
 
-class Component implements CustomizeContract {
+use Backdrop\Contracts\Bootable;
+
+class Component implements Bootable {
 	/**
 	 * Register panels
 	 */
