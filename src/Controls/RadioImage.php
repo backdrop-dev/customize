@@ -36,7 +36,7 @@ class RadioImage extends Control {
      *
      * @return void
      */
-    protected function render_content(): bool {
+    protected function render_content() {
         if ( empty( $this->choices ) ) {
             return;
         }

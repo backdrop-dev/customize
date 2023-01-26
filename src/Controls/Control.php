@@ -27,11 +27,11 @@ abstract class Control extends WP_Customize_Control {
      * This is the PHP callback for rendering the control content. JS-based
      * controls require this method to be empty. Because most of our classes
      * utilize JS templates, we're defining this in the base class to not
-     * worry about it in our sub-classes.
+     * worry about it in our subclasses.
      *
      * @since  1.0.0
      * @access public
-     * @return bool
+     * @return void
      */
-    protected function render_content(): bool {}
+    protected function render_content() {}
 }
