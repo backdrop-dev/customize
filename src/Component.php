@@ -12,7 +12,7 @@
 /**
  * Define namespace
  */
-namespace Benlumia007\Backdrop\Customize;
+namespace Backdrop\Customize;
 
 use Backdrop\Contracts\Bootable;
 
@@ -24,7 +24,7 @@ use WP_Customize_Manager;
  * @since  1.0.0
  * @access public
  */
-class Component implements Bootable {
+interface Component extends Bootable {
 
     /**
      * Add our panels for customizer.
@@ -34,7 +34,7 @@ class Component implements Bootable {
      * @param WP_Customize_Manager $manager
      * @return void
      */
-	public function panels( WP_Customize_Manager $manager ): void {}
+    public function panels( WP_Customize_Manager $manager );
 
     /**
      * Add our sections for customizer.
@@ -44,7 +44,7 @@ class Component implements Bootable {
      * @param WP_Customize_Manager $manager
      * @return void
      */
-	public function sections( WP_Customize_Manager $manager ): void {}
+    public function sections( WP_Customize_Manager $manager );
 
     /**
      * Add our settings for customizer.
@@ -54,7 +54,7 @@ class Component implements Bootable {
      * @param WP_Customize_Manager $manager
      * @return void
      */
-	public function settings( WP_Customize_Manager $manager ): void {}
+    public function settings( WP_Customize_Manager $manager );
 
     /**
      * Add our controls for customizer.
@@ -64,7 +64,7 @@ class Component implements Bootable {
      * @param WP_Customize_Manager $manager
      * @return void
      */
-	public function controls( WP_Customize_Manager $manager ): void {}
+    public function controls( WP_Customize_Manager $manager );
 
     /**
      * Sets up the customizer manager actions and filters.
@@ -73,10 +73,5 @@ class Component implements Bootable {
      * @access public
      * @return void
      */
-	public function boot(): void {
-		add_action( 'customize_register', [ $this, 'panels' ] );
-		add_action( 'customize_register', [ $this, 'sections' ] );
-		add_action( 'customize_register', [ $this, 'settings' ] );
-		add_action( 'customize_register', [ $this, 'controls' ] );
-	}
+    public function boot();
 }
