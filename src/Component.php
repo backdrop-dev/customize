@@ -31,7 +31,7 @@ interface Component extends Bootable {
      *
      * @since  1.0.0
      * @access public
-     * @param WP_Customize_Manager $manager
+     * @param  WP_Customize_Manager $manager
      * @return void
      */
     public function panels( WP_Customize_Manager $manager );
@@ -41,7 +41,7 @@ interface Component extends Bootable {
      *
      * @since  1.0.0
      * @access public
-     * @param WP_Customize_Manager $manager
+     * @param  WP_Customize_Manager $manager
      * @return void
      */
     public function sections( WP_Customize_Manager $manager );
@@ -51,7 +51,7 @@ interface Component extends Bootable {
      *
      * @since  1.0.0
      * @access public
-     * @param WP_Customize_Manager $manager
+     * @param  WP_Customize_Manager $manager
      * @return void
      */
     public function settings( WP_Customize_Manager $manager );
@@ -61,17 +61,8 @@ interface Component extends Bootable {
      *
      * @since  1.0.0
      * @access public
-     * @param WP_Customize_Manager $manager
+     * @param  WP_Customize_Manager $manager
      * @return void
      */
     public function controls( WP_Customize_Manager $manager );
-
-    /**
-     * Sets up the customizer manager actions and filters.
-     *
-     * @since  1.0.0
-     * @access public
-     * @return void
-     */
-    public function boot();
 }
