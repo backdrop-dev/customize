@@ -52,8 +52,8 @@ class RadioImage extends Control {
 
         <div id="input_<?php echo esc_attr( $this->id ); ?>" class="image">
             <?php foreach ( $this->choices as $value => $label ) : ?>
-                <label for="<?php echo esc_attr( $this->id . $value ); ?>">
-                    <input class="image-select" type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo esc_attr( $this->id . $value ); ?>" name="<?php echo esc_attr( $name ); ?>"
+                <label for="<?php echo esc_attr( $this->id . '_' . $value ); ?>">
+                    <input class="image-select" type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo esc_attr( $this->id . '_' . $value ); ?>" name="<?php echo esc_attr( $name ); ?>"
                         <?php
                         esc_attr( $this->link() );
                         checked( $this->value(), esc_attr( $value ) );
