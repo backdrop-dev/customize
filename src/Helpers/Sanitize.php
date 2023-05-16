@@ -23,9 +23,9 @@ class Sanitize {
      * @since 3.0.0
      * @access public
      * @param string $input     String containing a layout string.
-     * @param mixed  $settings  Object containing info about settings/controls that's being sanitized.
+     * @param mixed  $setting  Object containing info about settings/controls that's being sanitized.
      */
-    public static function layouts( string $input, mixed $setting ) {
+    public static function layouts( string $input, $setting ) {
 
         $choices = $setting->manager->get_control( $setting->id )->choices;
         return ( array_key_exists( $input, $choices ) ? $input : $setting->default );
