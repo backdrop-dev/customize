@@ -1,5 +1,5 @@
 jQuery(document).ready(function(){
-    wp.customize.controlConstructor['radio-image'] = wp.customize.Control.extend({
+    wp.customize.controlConstructor['backdrop-radio-image'] = wp.customize.Control.extend({
         ready: function() {
             var control = this;
             var value = (undefined !== control.setting._value) ? control.setting._value : '';
