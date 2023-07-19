@@ -24,7 +24,7 @@ use WP_Customize_Manager;
  * @since  1.0.0
  * @access public
  */
-class Component extends Bootable {
+class Component implements Bootable {
 
     public function boot() {
         add_action( 'customize_register', [ $this, 'panels' ] );
