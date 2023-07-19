@@ -28,6 +28,9 @@ class Component extends Bootable {
 
     public function boot() {
         add_action( 'customize_register', [ $this, 'panels' ] );
+				add_action( 'customize_register', [ $this, 'sections' ] );
+				add_action( 'customize_register', [ $this, 'settings' ] );
+				add_action( 'customize_register', [ $this, 'controls' ] );
     }
 
     /**
