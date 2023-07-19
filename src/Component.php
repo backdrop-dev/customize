@@ -82,7 +82,14 @@ class Component implements Customize {
 
         // Site Identity
         $manager->get_section( 'title_tagline' )->panel = 'theme_header';
-        $manager->get_section( 'title_tagline' )->title = esc_html__( 'Site Identity', 'backdrop' );
+        $manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'backdrop' );
+
+        /// ------------------------------------------------------------------------------------------------------------
+        ///  Theme: Content
+        /// ------------------------------------------------------------------------------------------------------------
+
+        // Static Front Page
+        $manager->get_section( 'static_front_page' )->panel = 'theme_content';
     }
 
     /**
