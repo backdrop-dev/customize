@@ -68,6 +68,13 @@ class Component implements Customize {
      */
     public function sections( WP_Customize_Manager $manager ) {
 
+        /// ------------------------------------------------------------------------------------------------------------
+		///  Theme: Global
+		/// ------------------------------------------------------------------------------------------------------------
+
+		// Additional CSS
+		$manager->get_section( 'custom_css' )->panel = 'theme_global';
+		$manager->get_section( 'custom_css' )->priority = 5;
     }
 
     /**
