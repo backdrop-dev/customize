@@ -15,7 +15,6 @@
 namespace Backdrop\Customize;
 
 use Backdrop\Contracts\Bootable;
-use Backdrop\Customize\Contracts\Customize;
 
 use WP_Customize_Manager;
 
@@ -25,7 +24,7 @@ use WP_Customize_Manager;
  * @since  1.0.0
  * @access public
  */
-class Component implements Customize {
+class Component extends Bootable {
 
     public function boot() {
         add_action( 'customize_register', [ $this, 'panels' ] );
