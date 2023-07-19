@@ -29,9 +29,6 @@ class Component implements Customize {
 
     public function boot() {
         add_action( 'customize_register', [ $this, 'panels' ] );
-		add_action( 'customize_register', [ $this, 'sections' ] );
-		add_action( 'customize_register', [ $this, 'settings' ] );
-		add_action( 'customize_register', [ $this, 'controls' ] );
     }
 
     /**
@@ -44,10 +41,10 @@ class Component implements Customize {
      */
     public function panels( WP_Customize_Manager $manager ) {
 		$panels = [
-			'theme_global'  => esc_html__( 'Theme: Global', 'silver-quantum' ),
-			'theme_header'  => esc_html__( 'Theme: Header', 'silver-quantum' ),
-			'theme_content' => esc_html__( 'Theme: Content', 'silver-quantum' ),
-			'theme_footer'  => esc_html__( 'Theme: Footer', 'silver-quantum' )
+			'theme_global'  => esc_html__( 'Theme: Global',  'backdrop' ),
+			'theme_header'  => esc_html__( 'Theme: Header',  'backdrop' ),
+			'theme_content' => esc_html__( 'Theme: Content', 'backdrop' ),
+			'theme_footer'  => esc_html__( 'Theme: Footer',  'backdrop' )
 		];
 
 		foreach ( $panels as $panel => $label ) {
@@ -56,63 +53,5 @@ class Component implements Customize {
 				'priority' => 100
 			] );
 		}
-    }
-
-    /**
-     * Add our sections for customizer.
-     *
-     * @since  1.0.0
-     * @access public
-     * @param  WP_Customize_Manager $manager
-     * @return void
-     */
-    public function sections( WP_Customize_Manager $manager ) {
-
-        /// ------------------------------------------------------------------------------------------------------------
-        ///  Theme: Global
-        /// ------------------------------------------------------------------------------------------------------------
-
-        // Additional CSS
-        $manager->get_section( 'custom_css' )->panel = 'theme_global';
-        $manager->get_section( 'custom_css' )->priority = 5;
-
-        /// ------------------------------------------------------------------------------------------------------------
-        ///  Theme: Header
-        /// ------------------------------------------------------------------------------------------------------------
-
-        // Site Identity
-        $manager->get_section( 'title_tagline' )->panel = 'theme_header';
-        $manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'backdrop' );
-
-        /// ------------------------------------------------------------------------------------------------------------
-        ///  Theme: Content
-        /// ------------------------------------------------------------------------------------------------------------
-
-        // Static Front Page
-        $manager->get_section( 'static_front_page' )->panel = 'theme_content';
-    }
-
-    /**
-     * Add our settings for customizer.
-     *
-     * @since  1.0.0
-     * @access public
-     * @param  WP_Customize_Manager $manager
-     * @return void
-     */
-    public function settings( WP_Customize_Manager $manager ) {
-
-    }
-
-    /**
-     * Add our controls for customizer.
-     *
-     * @since  1.0.0
-     * @access public
-     * @param  WP_Customize_Manager $manager
-     * @return void
-     */
-    public function controls( WP_Customize_Manager $manager ) {
-
     }
 }
