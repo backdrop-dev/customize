@@ -65,4 +65,21 @@ interface Component extends Bootable {
      * @return void
      */
     public function controls( WP_Customize_Manager $manager );
+
+    /**
+     * Adds our customizer-related actions to the appropriate hooks.
+     *
+     * @since  1.0.0
+     * @return void
+     *
+     * @access public
+     */
+    public function boot() {
+
+        // Register panels, sections, settings, controls, and partials.
+        add_action( 'customize_register', [ $this, 'panels' ] );
+        add_action( 'customize_register', [ $this, 'sections' ] );
+        add_action( 'customize_register', [ $this, 'settings' ] );
+        add_action( 'customize_register', [ $this, 'controls' ] );
+    }
 }
