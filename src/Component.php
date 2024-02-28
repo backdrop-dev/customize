@@ -36,10 +36,10 @@ class Component implements Bootable {
      */
     public function panels( WP_Customize_Manager $manager ) {
         $panels = [
-			'theme_global'  => esc_html__( 'Theme: Global',  'backdrop'  ),
-			'theme_header'  => esc_html__( 'Theme: Header',  'backdrop'  ),
-			'theme_content' => esc_html__( 'Theme: Content', 'backdrop'  ),
-			'theme_footer'  => esc_html__( 'Theme: Footer',   'backdrop' )
+			'theme_global'  => esc_html__( 'Theme: Global',  'backdrop' ),
+			'theme_header'  => esc_html__( 'Theme: Header',  'backdrop' ),
+			'theme_content' => esc_html__( 'Theme: Content', 'backdrop' ),
+			'theme_footer'  => esc_html__( 'Theme: Footer',  'backdrop' )
 		];
 
 		foreach ( $panels as $panel => $label ) {
