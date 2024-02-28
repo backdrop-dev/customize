@@ -63,7 +63,7 @@ class Component implements Bootable {
 		$manager->get_section( 'custom_css' )->panel = 'theme_global';
 
 		$manager->get_section( 'title_tagline' )->panel = 'theme_header';
-		$manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'prismatic' );
+		$manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'backdrop' );
     }
 
     /**
