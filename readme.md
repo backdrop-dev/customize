@@ -1,4 +1,4 @@
-# Backdrop\Customize
+# Backdrop Customize
 If you are a theme or plugin developer, you can add customization options to  your theme or plugin.
 
 ## Requirements
