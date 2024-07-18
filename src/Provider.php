@@ -34,7 +34,7 @@ class Provider extends ServiceProvider {
      *
      * @access public
      */
-    public function register() {
+    public function register(): void {
         $this->app->singleton( Component::class );
     }
 
@@ -46,7 +46,7 @@ class Provider extends ServiceProvider {
      *
      * @access public
      */
-    public function boot() {
+    public function boot(): void {
         $this->app->resolve( Component::class )->boot();
     }
 
