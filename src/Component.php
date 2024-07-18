@@ -64,6 +64,8 @@ class Component implements Bootable {
 
 		$manager->get_section( 'title_tagline' )->panel = 'theme_header';
 		$manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'backdrop' );
+
+		$manager->get_section( 'static_front_page' )->panel = 'theme_content';
     }
 
     /**
