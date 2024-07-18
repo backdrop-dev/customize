@@ -15,6 +15,7 @@
 namespace Backdrop\Customize;
 
 use Backdrop\Contracts\Bootable;
+use Backdrop\App;
 
 use WP_Customize_Manager;
 
@@ -26,28 +27,77 @@ use WP_Customize_Manager;
  */
 class Component implements Bootable {
 
+		/**
+		 * Array of `Customizable` components bound to the container.
+		 *
+		 * @since  1.0.0
+		 * @access protected
+		 * @var    array
+		 */
+		protected $components = [];
+
+		/**
+		 * Sets up initial object properties.
+		 *
+		 * @since  1.0.0
+		 * @access public
+		 * @param  array  $components  Array `Customizable` component names.
+		 * @return void
+		 */
+		public function __construct( array $components = [] ) {
+
+			$this->components = $components;
+		}
+
     /**
-     * Add our panels for customizer.
+     * Adds our customizer-related actions to the appropriate hooks.
      *
      * @since  1.0.0
-     * @access public
-     * @param  WP_Customize_Manager $manager
      * @return void
+     *
+     * @access public
      */
-    public function panels( WP_Customize_Manager $manager ) {
-        $panels = [
-			'theme_global'  => esc_html__( 'Theme: Global',  'backdrop' ),
-			'theme_header'  => esc_html__( 'Theme: Header',  'backdrop' ),
-			'theme_content' => esc_html__( 'Theme: Content', 'backdrop' ),
-			'theme_footer'  => esc_html__( 'Theme: Footer',  'backdrop' )
-		];
+    public function boot(): void {
 
-		foreach ( $panels as $panel => $label ) {
-			$manager->add_panel( $panel, [
-				'title'    => $label,
-				'priority' => 100
-			] );
+				// Register panels, sections, settings, controls, and partials.
+				array_map( function( $callback ) {
+						add_action( 'customize_register', [ $this, $callback ] );
+				}, [
+					'registerPanels',
+					'registerSections',
+					'registerSettings',
+					'registerControls'
+				] );
 		}
+
+		/**
+		 * Callback for registering panels.
+		 *
+		 * @link   https://developer.wordpress.org/themes/customize-api/customizer-objects/#panels
+		 * @since  1.0.0
+		 * @access public
+		 * @param  WP_Customize_Manager  $manager  Instance of the customize manager.
+		 * @return void
+		 */
+    public function registerPanels( WP_Customize_Manager $manager ) {
+				$panels = [
+						'theme_global'  => esc_html__( 'Theme: Global',  'backdrop' ),
+						'theme_header'  => esc_html__( 'Theme: Header',  'backdrop' ),
+						'theme_content' => esc_html__( 'Theme: Content', 'backdrop' ),
+						'theme_footer'  => esc_html__( 'Theme: Footer',  'backdrop' )
+				];
+
+				foreach ( $panels as $panel => $label ) {
+						$manager->add_panel( $panel, [
+								'title'    => $label,
+								'priority' => 100
+						] );
+				}
+
+				foreach ( $this->components as $components ) {
+
+					App::resolve( $component )->registerPanels( $manager );
+				}
     }
 
     /**
@@ -66,6 +116,7 @@ class Component implements Bootable {
 		$manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'backdrop' );
 
 		$manager->get_section( 'static_front_page' )->panel = 'theme_content';
+		$manager->get_section( 'nav_menus' )->panel = 'theme_global';
     }
 
     /**
@@ -87,21 +138,4 @@ class Component implements Bootable {
      * @return void
      */
     public function controls( WP_Customize_Manager $manager ) {}
-
-    /**
-     * Adds our customizer-related actions to the appropriate hooks.
-     *
-     * @since  1.0.0
-     * @return void
-     *
-     * @access public
-     */
-    public function boot(): void {
-
-        // Register panels, sections, settings, controls, and partials.
-        add_action( 'customize_register', [ $this, 'panels' ] );
-        add_action( 'customize_register', [ $this, 'sections' ] );
-        add_action( 'customize_register', [ $this, 'settings' ] );
-        add_action( 'customize_register', [ $this, 'controls' ] );
-    }
 }
