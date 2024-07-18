@@ -108,7 +108,7 @@ class Component implements Bootable {
      * @param  WP_Customize_Manager $manager
      * @return void
      */
-    public function sections( WP_Customize_Manager $manager ) {
+    public function registerSections( WP_Customize_Manager $manager ) {
 
 		$manager->get_section( 'custom_css' )->panel = 'theme_global';
 
@@ -127,7 +127,7 @@ class Component implements Bootable {
      * @param  WP_Customize_Manager $manager
      * @return void
      */
-    public function settings( WP_Customize_Manager $manager ) {}
+    public function registerSettings( WP_Customize_Manager $manager ) {}
 
     /**
      * Add our controls for customizer.
@@ -137,5 +137,5 @@ class Component implements Bootable {
      * @param  WP_Customize_Manager $manager
      * @return void
      */
-    public function controls( WP_Customize_Manager $manager ) {}
+    public function registerControls( WP_Customize_Manager $manager ) {}
 }
