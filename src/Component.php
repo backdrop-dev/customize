@@ -100,14 +100,15 @@ class Component implements Bootable {
 				}
     }
 
-    /**
-     * Add our sections for customizer.
-     *
-     * @since  1.0.0
-     * @access public
-     * @param  WP_Customize_Manager $manager
-     * @return void
-     */
+	/**
+	 * Callback for registering sections.
+	 *
+	 * @link   https://developer.wordpress.org/themes/customize-api/customizer-objects/#sections
+	 * @since  1.0.0
+	 * @access public
+	 * @param  WP_Customize_Manager  $manager  Instance of the customize manager.
+	 * @return void
+	 */
     public function registerSections( WP_Customize_Manager $manager ) {
 
 		$manager->get_section( 'custom_css' )->panel = 'theme_global';
@@ -118,14 +119,15 @@ class Component implements Bootable {
 		$manager->get_section( 'static_front_page' )->panel = 'theme_content';
     }
 
-    /**
-     * Add our settings for customizer.
-     *
-     * @since  1.0.0
-     * @access public
-     * @param  WP_Customize_Manager $manager
-     * @return void
-     */
+	/**
+	 * Callback for registering controls.
+	 *
+	 * @link   https://developer.wordpress.org/themes/customize-api/customizer-objects/#controls
+	 * @since  1.0.0
+	 * @access public
+	 * @param  WP_Customize_Manager  $manager  Instance of the customize manager.
+	 * @return void
+	 */
     public function registerSettings( WP_Customize_Manager $manager ) {}
 
     /**
