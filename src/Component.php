@@ -59,15 +59,15 @@ class Component implements Bootable {
      */
     public function boot(): void {
 
-				// Register panels, sections, settings, controls, and partials.
-				array_map( function( $callback ) {
-						add_action( 'customize_register', [ $this, $callback ] );
-				}, [
-					'registerPanels',
-					'registerSections',
-					'registerSettings',
-					'registerControls'
-				] );
+		// Register panels, sections, settings, controls, and partials.
+		array_map( function( $callback ) {
+			add_action( 'customize_register', [ $this, $callback ] );
+		}, [
+			'registerPanels',
+			'registerSections',
+			'registerSettings',
+			'registerControls'
+		] );
 		}
 
 		/**
@@ -80,24 +80,24 @@ class Component implements Bootable {
 		 * @return void
 		 */
     public function registerPanels( WP_Customize_Manager $manager ) {
-				$panels = [
-						'theme_global'  => esc_html__( 'Theme: Global',  'backdrop' ),
-						'theme_header'  => esc_html__( 'Theme: Header',  'backdrop' ),
-						'theme_content' => esc_html__( 'Theme: Content', 'backdrop' ),
-						'theme_footer'  => esc_html__( 'Theme: Footer',  'backdrop' )
-				];
+		$panels = [
+				'backdrop_theme_global'  => esc_html__( 'Theme: Global',  'backdrop' ),
+				'backdrop_theme_header'  => esc_html__( 'Theme: Header',  'backdrop' ),
+				'backdrop_theme_content' => esc_html__( 'Theme: Content', 'backdrop' ),
+				'backdrop_theme_footer'  => esc_html__( 'Theme: Footer',  'backdrop' )
+		];
 
-				foreach ( $panels as $panel => $label ) {
-						$manager->add_panel( $panel, [
-								'title'    => $label,
-								'priority' => 100
-						] );
-				}
+		foreach ( $panels as $panel => $label ) {
+				$manager->add_panel( $panel, [
+						'title'    => $label,
+						'priority' => 100
+				] );
+		}
 
-				foreach ( $this->components as $components ) {
+		foreach ( $this->components as $components ) {
 
-					App::resolve( $component )->registerPanels( $manager );
-				}
+			App::resolve( $component )->registerPanels( $manager );
+		}
     }
 
 	/**
@@ -111,12 +111,12 @@ class Component implements Bootable {
 	 */
     public function registerSections( WP_Customize_Manager $manager ) {
 
-		$manager->get_section( 'custom_css' )->panel = 'theme_global';
+		$manager->get_section( 'custom_css' )->panel = 'backdrop_theme_global';
 
-		$manager->get_section( 'title_tagline' )->panel = 'theme_header';
+		$manager->get_section( 'title_tagline' )->panel = 'backdrop_theme_header';
 		$manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'backdrop' );
 
-		$manager->get_section( 'static_front_page' )->panel = 'theme_content';
+		$manager->get_section( 'static_front_page' )->panel = 'backdrop_theme_content';
     }
 
 	/**
