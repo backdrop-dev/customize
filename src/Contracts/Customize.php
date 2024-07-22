@@ -12,7 +12,7 @@
  * @link      https://github.com/backdrop-dev/customize
  */
 
-namespace Backdrop\Contracts\Customize;
+namespace Backdrop\Customize\Contracts;
 
 use WP_Customize_Manager;
 use Backdrop\Tools\Collection;
