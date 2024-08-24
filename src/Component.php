@@ -107,6 +107,8 @@ class Component implements Bootable {
 	 */
     public function registerSections( WP_Customize_Manager $manager ) {
 
+        $manager->get_section( 'custom_css' )->panel = 'backdrop_theme_global';
+
 
 		foreach ( $this->components as $component ) {
 
