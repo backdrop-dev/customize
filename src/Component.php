@@ -4,22 +4,18 @@
  *
  * Integrates the theme's settings into the customizer.
  *
- * @package   backdrop
+ * @package   Backdrop Customize
  * @author    Benjamin Lu <benlumia007@gmail.com>
- * @copyright 2024 Benjamin Lu
+ * @copyright 2019 Benjamin Lu
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
- * @link      https://luthemes.com/portfolio/backdrop
+ * @link      https://github.com/backdrop-dev/customize
  */
 
 namespace backdrop\Customize;
 
 use Backdrop\App;
 use Backdrop\Contracts\Bootable;
-use function Backdrop\Mix\asset;
-use backdrop\Tools\Collection;
-use backdrop\Tools\Mod;
 use WP_Customize_Manager;
-use backdrop\Template\Footer;
 
 class Component implements Bootable {
 
