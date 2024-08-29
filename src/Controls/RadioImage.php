@@ -14,73 +14,56 @@
 
 namespace Backdrop\Customize\Controls;
 
+/**
+ * Radio image customize control.
+ *
+ * @since  1.0.0
+ * @access public
+ */
 class RadioImage extends Control {
 
     /**
      * The type of customize control being rendered.
      *
-     * @var string
+     * @access public
+     * @since  1.0.0
+     * @var    string
      */
     public $type = 'backdrop-radio-image';
 
     /**
-     * Add custom parameters to pass to the JS via JSON.
-     *
-     * @return void
-     */
-    public function to_json() {
-        parent::to_json();
-
-        // We need to make sure we have the correct image URL.
-        array_walk( $this->choices, static function ( &$args, $key ) {
-
-            // Replaces `%s` or `%1$s` with the template directory
-            // URI and `%2$s` with the stylesheet directory URI.
-            $args['url'] = esc_url(
-                sprintf(
-                    $args['url'],
-                    get_template_directory_uri(),
-                    get_stylesheet_directory_uri()
-                )
-            );
-        } );
-
-        $this->json['choices'] = $this->choices;
-        $this->json['link']    = $this->get_link();
-        $this->json['value']   = $this->value();
-        $this->json['id']      = $this->id;
-    }
-
-    /**
-     * Underscore JS template to handle the control's output.
+     * Loads the template
      *
      * @return void
      */
     protected function render_content() {
-        ?>
-
-        <# if ( ! data.choices ) {
+        if ( empty( $this->choices ) ) {
             return;
-        } #>
+        }
 
-        <# if ( data.label ) { #>
-            <span class="customize-control-title">{{ data.label }}</span>
-        <# } #>
+        $name = '_customize-radio-' . $this->id;
+        ?>
+        <span class="customize-control-title">
+			<?php echo esc_attr( $this->label ); ?>
+		</span>
+        <?php if ( ! empty( $this->description ) ) : ?>
+            <span class="description customize-control-description"><?php echo esc_html( $this->description ); ?></span>
+        <?php endif; ?>
 
-        <# if ( data.description ) { #>
-            <span class="description customize-control-description">{{{ data.description }}}</span>
-        <# } #>
-
-        <# _.each( data.choices, function( args, choice ) { #>
-            <label class="radio-image">
-                <input type="radio" class="radio-image__radio" value="{{ choice }}" name="_customize-{{ data.type }}-{{ data.id }}" {{{ data.link }}} <# if ( choice === data.value ) { #> checked="checked" <# } #> />
-
-                <span class="radio-image__label screen-reader-text">{{ args.label }}</span>
-
-                <img class="radio-image__image" src="{{ args.url }}" alt="{{ args.label }}" />
-            </label>
-        <# } ) #>
+        <div id="input_<?php echo esc_attr( $this->id ); ?>" class="image">
+            <?php foreach ( $this->choices as $value => $label ) : ?>
+                <label for="<?php echo esc_attr( $this->id . '_' . $value ); ?>">
+                    <input class="image-select" type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo esc_attr( $this->id . '_' . $value ); ?>" name="<?php echo esc_attr( $name ); ?>"
+                        <?php
+                        esc_attr( $this->link() );
+                        checked( $this->value(), esc_attr( $value ) );
+                        ?>
+                    >
+                    <img src="<?php echo esc_url( $label ); ?>" alt="<?php echo esc_attr( $value ); ?>" title="<?php echo esc_attr( $value ); ?>">
+                </label>
+                </input>
+            <?php endforeach; ?>
+        </div>
         <?php
     }
-
 }
