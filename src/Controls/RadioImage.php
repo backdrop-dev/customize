@@ -56,7 +56,7 @@ class RadioImage extends Control {
      *
      * @return void
      */
-    protected function content_template() {
+    protected function render_content() {
         ?>
 
         <# if ( ! data.choices ) {
