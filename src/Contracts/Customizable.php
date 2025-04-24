@@ -92,28 +92,4 @@ abstract class Customizable {
 	 * @return void
 	 */
 	public function registerPartials( WP_Customize_Manager $manager ) {}
-
-	/**
-	* Registers JSON for the customize controls script via `wp_localize_script()`.
-	* Objects added to the collection should implement the `JsonSerializable`
-	* interface.
-	*
-	* @since  1.0.0
-	* @access public
-	* @param  Collection  $json
-	* @return void
-	*/
-	public function controlsJson( Collection $json ) {}
-
-	/**
-	* Registers JSON for the customize preview script via `wp_localize_script()`.
-	* Objects added to the collection should implement the `JsonSerializable`
-	* interface.
-	*
-	* @since  1.0.0
-	* @access public
-	* @param  Collection  $json
-	* @return void
-	*/
-	public function previewJson( Collection $json ) {}
 }
