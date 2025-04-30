@@ -25,7 +25,7 @@ class RadioImage extends Control {
      *
      * @var string
      */
-    public $type = 'hybrid-radio-image';
+    public $type = 'backdrop-radio-image';
 
     /**
      * Add custom parameters to pass to the JS via JSON.
