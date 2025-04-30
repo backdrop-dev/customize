@@ -14,7 +14,6 @@
 
 namespace Backdrop\Customize\Controls;
 
-use Backdrop\Customize\Contracts\Control;
 
 /**
  * Radio image customize control.
