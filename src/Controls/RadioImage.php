@@ -100,4 +100,11 @@ class RadioImage extends Control {
 
                         <span class="radio-image__label screen-reader-text">{{ args.label }}</span>
 
-                        <img class="radio-im
+                        <img class="radio-image__image" src="{{ args.url }}" alt="{{ args.label }}" />
+                    </label>
+                <# }); #>
+            </div>
+        <# } #>
+        <?php
+    }
+}
