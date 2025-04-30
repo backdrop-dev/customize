@@ -12,9 +12,9 @@
  * @link      https://github.com/backdrop-dev/customize
  */
 
-namespace Hybrid\Customize;
+namespace Backdrop\Customize;
 
-use Hybrid\Core\ServiceProvider;
+use Backdrop\Core\ServiceProvider;
 
 /**
  * Customize provider.
