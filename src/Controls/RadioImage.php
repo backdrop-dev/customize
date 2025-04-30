@@ -26,46 +26,29 @@ class RadioImage extends Control {
      *
      * @var string
      */
-    public $type = 'backdrop-radio-image';
+    public $type = 'hybrid-radio-image';
 
     /**
-     * Passes data to the JavaScript via JSON.
+     * Add custom parameters to pass to the JS via JSON.
      *
      * @return void
      */
     public function to_json() {
         parent::to_json();
 
-        // Ensure choices is always an array
-        if ( ! is_array( $this->choices ) ) {
-            $this->choices = [];
-        }
+        // We need to make sure we have the correct image URL.
+        array_walk( $this->choices, static function ( &$args, $key ) {
 
-        foreach ( $this->choices as $key => &$args ) {
-            if ( is_string( $args ) ) {
-                // If a string is passed instead of an array, convert it
-                $args = [
-                    'label' => ucfirst( str_replace( '-', ' ', $key ) ),
-                    'url'   => $args,
-                ];
-            }
-
-            if ( isset( $args['url'] ) ) {
-                $args['url'] = esc_url(
-                    sprintf(
-                        $args['url'],
-                        get_template_directory_uri(),
-                        get_stylesheet_directory_uri()
-                    )
-                );
-            } else {
-                $args['url'] = '';
-            }
-
-            if ( ! isset( $args['label'] ) ) {
-                $args['label'] = ucfirst( str_replace( '-', ' ', $key ) );
-            }
-        }
+            // Replaces `%s` or `%1$s` with the template directory
+            // URI and `%2$s` with the stylesheet directory URI.
+            $args['url'] = esc_url(
+                sprintf(
+                    $args['url'],
+                    get_template_directory_uri(),
+                    get_stylesheet_directory_uri()
+                )
+            );
+        } );
 
         $this->json['choices'] = $this->choices;
         $this->json['link']    = $this->get_link();
@@ -74,12 +57,17 @@ class RadioImage extends Control {
     }
 
     /**
-     * JS template for rendering the control.
+     * Underscore JS template to handle the control's output.
      *
      * @return void
      */
     protected function content_template() {
         ?>
+
+        <# if ( ! data.choices ) {
+            return;
+        } #>
+
         <# if ( data.label ) { #>
             <span class="customize-control-title">{{ data.label }}</span>
         <# } #>
@@ -88,23 +76,16 @@ class RadioImage extends Control {
             <span class="description customize-control-description">{{{ data.description }}}</span>
         <# } #>
 
-        <# if ( data.choices ) { #>
-            <div class="radio-image-control">
-                <# _.each( data.choices, function( args, key ) { #>
-                    <label class="radio-image">
-                        <input type="radio" class="radio-image__radio"
-                               value="{{ key }}"
-                               name="_customize-{{ data.type }}-{{ data.id }}"
-                               {{{ data.link }}}
-                               <# if ( key === data.value ) { #> checked="checked" <# } #> />
+        <# _.each( data.choices, function( args, choice ) { #>
+            <label class="radio-image">
+                <input type="radio" class="radio-image__radio" value="{{ choice }}" name="_customize-{{ data.type }}-{{ data.id }}" {{{ data.link }}} <# if ( choice === data.value ) { #> checked="checked" <# } #> />
 
-                        <span class="radio-image__label screen-reader-text">{{ args.label }}</span>
+                <span class="radio-image__label screen-reader-text">{{ args.label }}</span>
 
-                        <img class="radio-image__image" src="{{ args.url }}" alt="{{ args.label }}" />
-                    </label>
-                <# }); #>
-            </div>
-        <# } #>
+                <img class="radio-image__image" src="{{ args.url }}" alt="{{ args.label }}" />
+            </label>
+        <# } ) #>
         <?php
     }
+
 }
