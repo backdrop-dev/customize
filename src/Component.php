@@ -28,7 +28,7 @@ class Component implements Bootable {
      *
      * @return void
      */
-    public function boot() {
+    public function boot(): void {
 
         // Register panels, sections, settings, controls, and partials.
         add_action( 'customize_register', [ $this, 'registerControls' ], 0 );
