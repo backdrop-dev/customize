@@ -82,10 +82,10 @@ class Component implements Bootable {
      */
     public function registerPanels( WP_Customize_Manager $manager ) {
 		$panels = [
-				'theme_global'  => esc_html__( 'Theme: Global',  'generosity' ),
-				'theme_header'  => esc_html__( 'Theme: Header',  'generosity' ),
-				'theme_content' => esc_html__( 'Theme: Content', 'generosity' ),
-				'theme_footer'  => esc_html__( 'Theme: Footer',  'generosity' )
+				'theme_global'  => esc_html__( 'Theme: Global',  'backdrop' ),
+				'theme_header'  => esc_html__( 'Theme: Header',  'backdrop' ),
+				'theme_content' => esc_html__( 'Theme: Content', 'backdrop' ),
+				'theme_footer'  => esc_html__( 'Theme: Footer',  'backdrop' )
 		];
 
 		foreach ( $panels as $panel => $label ) {
@@ -114,7 +114,7 @@ class Component implements Bootable {
 
         $manager->get_section( 'custom_css' )->panel = 'theme_global';
         $manager->get_section( 'title_tagline' )->panel = 'theme_header';
-        $manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'generosity' );
+        $manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'backdrop' );
         $manager->get_section( 'static_front_page' )->panel = 'theme_content';
         $manager->get_section( 'static_front_page' )->priority = '5';
         $manager->remove_section( 'colors' );
