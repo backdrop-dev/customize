@@ -24,15 +24,125 @@ use WP_Customize_Manager;
 class Component implements Bootable {
 
     /**
+     * Array of `Customizable` components bound to the container.
+     *
+     * @since  0.0.1
+     * @access protected
+     * @var    array
+     */
+    protected $components = [];
+
+    /**
+     * Sets up initial object properties.
+     *
+     * @since  0.0.1
+     * @access public
+     * @param  array  $components  Array `Customizable` component names.
+     * @return void
+     */
+    public function __construct( array $components = [] ) {
+
+        $this->components = $components;
+    }
+
+
+
+
+    /**
      * Adds our customizer-related actions to the appropriate hooks.
      *
+     * @since  0.0.1
      * @return void
+     *
+     * @access public
      */
     public function boot(): void {
 
-        // Register panels, sections, settings, controls, and partials.
-        add_action( 'customize_register', [ $this, 'registerControls' ], 0 );
+		array_map( function( $callback ) {
+
+            // Register panels, sections, settings, controls, and partials.
+			add_action( 'customize_register', [ $this, $callback ] );
+		}, [
+			'registerPanels',
+			'registerSections',
+			'registerSettings',
+			'registerControls',
+			'registerPartials',
+		] );
+	}
+
+    /**
+     * Callback for registering panels.
+     *
+     * @link   https://developer.wordpress.org/themes/customize-api/customizer-objects/#panels
+     * @since  0.0.1
+     * @access public
+     * @param  WP_Customize_Manager  $manager  Instance of the customize manager.
+     * @return void
+     */
+    public function registerPanels( WP_Customize_Manager $manager ) {
+		$panels = [
+				'theme_global'  => esc_html__( 'Theme: Global',  'generosity' ),
+				'theme_header'  => esc_html__( 'Theme: Header',  'generosity' ),
+				'theme_content' => esc_html__( 'Theme: Content', 'generosity' ),
+				'theme_footer'  => esc_html__( 'Theme: Footer',  'generosity' )
+		];
+
+		foreach ( $panels as $panel => $label ) {
+				$manager->add_panel( $panel, [
+						'title'    => $label,
+						'priority' => 100
+				] );
+		}
+
+		foreach ( $this->components as $component ) {
+
+			App::resolve( $component )->registerPanels( $manager );
+		}
     }
+
+	/**
+	 * Callback for registering sections.
+	 *
+	 * @link   https://developer.wordpress.org/themes/customize-api/customizer-objects/#sections
+	 * @since  0.0.1
+	 * @access public
+	 * @param  WP_Customize_Manager  $manager  Instance of the customize manager.
+	 * @return void
+	 */
+    public function registerSections( WP_Customize_Manager $manager ) {
+
+        $manager->get_section( 'custom_css' )->panel = 'theme_global';
+        $manager->get_section( 'title_tagline' )->panel = 'theme_header';
+        $manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'generosity' );
+        $manager->get_section( 'static_front_page' )->panel = 'theme_content';
+        $manager->get_section( 'static_front_page' )->priority = '5';
+        $manager->remove_section( 'colors' );
+        $manager->get_section( 'header_image' )->panel = 'theme_header';
+
+
+		foreach ( $this->components as $component ) {
+
+			App::resolve( $component )->registerSections( $manager );
+		}
+    }
+
+	/**
+	 * Callback for registering controls.
+	 *
+	 * @link   https://developer.wordpress.org/themes/customize-api/customizer-objects/#controls
+	 * @since  0.0.1
+	 * @access public
+	 * @param  WP_Customize_Manager  $manager  Instance of the customize manager.
+	 * @return void
+	 */
+    public function registerSettings( WP_Customize_Manager $manager ) {
+
+		foreach ( $this->components as $component ) {
+
+			App::resolve( $component )->registerSettings( $manager );
+		}
+	}
 
     /**
      * Registers our JS-based custom control types with WordPress.
@@ -49,6 +159,26 @@ class Component implements Bootable {
         array_map( static function ( $control ) use ( $manager ) {
             $manager->register_control_type( $control );
         }, $controls );
+
+		foreach ( $this->components as $component ) {
+
+			App::resolve( $component )->registerControls( $manager );
+		}
     }
 
+	/**
+	 * Registers customizer partials.
+	 *
+	 * @since  0.0.1
+	 * @access public
+	 * @param  WP_Customize_Manager  $manager
+	 * @return void
+	 */
+	public function registerPartials( WP_Customize_Manager $manager ) {
+
+		foreach ( $this->components as $component ) {
+
+			App::resolve( $component )->registerPartials( $manager );
+		}
+	}
 }
