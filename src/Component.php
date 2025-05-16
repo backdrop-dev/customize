@@ -17,6 +17,7 @@ namespace Backdrop\Customize;
 use Backdrop\Contracts\Bootable;
 use Backdrop\Customize\Controls\RadioImage;
 use WP_Customize_Manager;
+use Backdrop\App;
 
 /**
  * Customize class.
