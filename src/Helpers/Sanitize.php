@@ -1,6 +1,6 @@
 <?php
 /**
- * Sanitize Helpers
+ * Sanitize helpers.
  *
  * @package   Backdrop Customize
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -9,51 +9,63 @@
  * @link      https://github.com/backdrop-dev/customize
  */
 
-/**
- * Define namespace
- */
 namespace Backdrop\Customize\Helpers;
 
 /**
- * Regiser Menu Class
+ * Sanitize callbacks for customize settings.
  */
 class Sanitize {
-    /**
-     * Loads choices for layouts
-     *
-     * @since 3.0.0
-     * @access public
-     * @param string $input     String containing a layout string.
-     * @param mixed  $setting  Object containing info about settings/controls that's being sanitized.
-     */
-    public static function layouts( string $input, $setting ) {
 
-        $choices = $setting->manager->get_control( $setting->id )->choices;
-        return ( array_key_exists( $input, $choices ) ? $input : $setting->default );
+    /**
+     * Sanitizes a value against the choices of the control for the setting, and falls back
+     * to the setting's default if it isn't one of them.
+     *
+     * @param  mixed   $input
+     * @param  object  $setting  The `WP_Customize_Setting` being sanitized.
+     * @return mixed
+     */
+    public static function choices( $input, $setting ) {
+
+        $control = $setting->manager->get_control( $setting->id );
+        $choices = $control ? (array) $control->choices : [];
+
+        return array_key_exists( $input, $choices ) ? $input : $setting->default;
     }
 
     /**
-     * Santize checkbox
+     * Same as `choices()`, kept for existing themes that call it for layouts.
      *
-     * @since 2.0.0
-     * @access public
-     * @param bool $value
+     * @param  mixed   $input
+     * @param  object  $setting
+     * @return mixed
+     */
+    public static function layouts( $input, $setting ) {
+
+        return static::choices( $input, $setting );
+    }
+
+    /**
+     * Sanitizes a checkbox.
+     *
+     * @param  mixed  $value
      * @return bool
      */
-    public static function checkbox( bool $value ): bool {
+    public static function checkbox( $value ): bool {
 
-        return true === $value;
+        return wp_validate_boolean( $value );
     }
 
     /**
-     * 1.0 - Customize ( Validations )
+     * Sanitizes a page ID. Only the ID of a published page is allowed.
      *
-     * @param array $page_id output.
-     * @param array $setting output.
+     * @param  mixed   $page_id
+     * @param  object  $setting
+     * @return int
      */
-    public static function dropdown( array $page_id, array $setting ) {
+    public static function dropdown( $page_id, $setting ): int {
 
         $page_id = absint( $page_id );
-        return ( 'publish' === get_post_status( $page_id ) ? $page_id : $setting->default );
+
+        return 'publish' === get_post_status( $page_id ) ? $page_id : absint( $setting->default );
     }
 }

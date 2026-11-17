@@ -1,7 +1,7 @@
 {
     "name": "backdrop-dev/customize",
     "description": "Additional ClassicPress and WordPress theme customizer for Backdrop framework.",
-    "keywords": [ "classicpress", "wordpress" ],
+    "keywords": [ "classicpress", "wordpress", "backdrop", "customizer" ],
     "homepage": "https://github.com/backdrop-dev/customize",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -18,6 +18,7 @@
 		}
     },
     "require": {
-        "php": ">=7.1"
+        "php": ">=7.4",
+        "backdrop-dev/framework": "^2.0"
     }
 }

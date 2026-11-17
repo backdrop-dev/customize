@@ -17,7 +17,7 @@ namespace Backdrop\Customize;
 use Backdrop\Contracts\Bootable;
 use Backdrop\Customize\Controls\RadioImage;
 use WP_Customize_Manager;
-use Backdrop\App;
+use Backdrop\Proxies\App;
 
 /**
  * Customize class.
@@ -67,6 +67,8 @@ class Component implements Bootable {
 			'registerControls',
 			'registerPartials',
 		] );
+
+		add_action( 'customize_controls_print_styles', [ $this, 'printStyles' ] );
 	}
 
     /**
@@ -110,14 +112,15 @@ class Component implements Bootable {
 	 */
     public function registerSections( WP_Customize_Manager $manager ) {
 
-        $manager->get_section( 'custom_css' )->panel = 'theme_global';
-        $manager->get_section( 'title_tagline' )->panel = 'theme_header';
-        $manager->get_section( 'title_tagline' )->title = esc_html__( 'Branding', 'backdrop' );
-        $manager->get_section( 'static_front_page' )->panel = 'theme_content';
-        $manager->get_section( 'static_front_page' )->priority = '5';
-        $manager->remove_section( 'colors' );
-        $manager->get_section( 'header_image' )->panel = 'theme_header';
+        $this->moveSection( $manager, 'custom_css', 'theme_global' );
+        $this->moveSection( $manager, 'title_tagline', 'theme_header', [ 'title' => esc_html__( 'Branding', 'backdrop' ) ] );
+        $this->moveSection( $manager, 'header_image', 'theme_header' );
+        $this->moveSection( $manager, 'static_front_page', 'theme_content', [ 'priority' => 5 ] );
 
+        // The core Colors section is removed by default. Return false from this filter to keep it.
+        if ( apply_filters( 'backdrop/customize/remove_colors_section', true ) ) {
+            $manager->remove_section( 'colors' );
+        }
 
 		foreach ( $this->components as $component ) {
 
@@ -179,4 +182,43 @@ class Component implements Bootable {
 			App::resolve( $component )->registerPartials( $manager );
 		}
 	}
+
+    /**
+     * Moves a core section into a panel, if the section exists.
+     *
+     * @param  WP_Customize_Manager  $manager
+     * @param  string                $id
+     * @param  string                $panel
+     * @param  array                 $properties  Other section properties to set.
+     * @return void
+     */
+    protected function moveSection( WP_Customize_Manager $manager, string $id, string $panel, array $properties = [] ): void {
+
+        $section = $manager->get_section( $id );
+
+        if ( ! $section ) {
+            return;
+        }
+
+        $section->panel = $panel;
+
+        foreach ( $properties as $property => $value ) {
+            $section->$property = $value;
+        }
+    }
+
+    /**
+     * Prints the styles for the radio image control in the customizer.
+     *
+     * @return void
+     */
+    public function printStyles(): void { ?>
+        <style id="backdrop-customize-styles">
+            .customize-control-backdrop-radio-image .radio-image { display: inline-block; margin: 0 8px 8px 0; position: relative; vertical-align: top; }
+            .customize-control-backdrop-radio-image .radio-image__radio { opacity: 0; position: absolute; }
+            .customize-control-backdrop-radio-image .radio-image__image { border: 2px solid transparent; border-radius: 3px; box-sizing: border-box; cursor: pointer; display: block; height: auto; max-width: 100%; width: 100%; }
+            .customize-control-backdrop-radio-image .radio-image__radio:checked + .radio-image__label + .radio-image__image { border-color: #0073aa; }
+            .customize-control-backdrop-radio-image .radio-image__radio:focus + .radio-image__label + .radio-image__image { box-shadow: 0 0 0 1px #fff, 0 0 0 3px #0073aa; }
+        </style>
+    <?php }
 }
