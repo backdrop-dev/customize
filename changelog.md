@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 - November 17, 2026
+## 1.0.3 - November 17, 2026
 Changed
 * The component now takes an array of customizable component classes, registers the panels `theme_global`, `theme_header`, `theme_content` and `theme_footer`, moves the core sections into them, and calls each component to register its own sections, settings, controls and partials. Use it from your own service provider, as in the readme.
 * Requires PHP 7.4 and `backdrop-dev/framework` ^2.0, which the package uses but didn't declare, and uses the `Backdrop\Proxies\App` proxy instead of the `Backdrop\App` alias.
