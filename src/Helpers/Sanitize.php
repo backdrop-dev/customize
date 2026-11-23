@@ -68,4 +68,16 @@ class Sanitize {
 
         return 'publish' === get_post_status( $page_id ) ? $page_id : absint( $setting->default );
     }
+
+    /**
+     * Sanitizes text that may have HTML, keeping only the allowed tags.
+     *
+     * @param  mixed  $value
+     * @param  array  $allowed  Allowed tags and attributes, as for `wp_kses()`.
+     * @return string
+     */
+    public static function html( $value, array $allowed ): string {
+
+        return wp_kses( (string) $value, $allowed );
+    }
 }

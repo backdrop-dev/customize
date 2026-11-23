@@ -14,6 +14,7 @@ composer require backdrop-dev/customize
 * Registers the panels `theme_global` (Theme: Global), `theme_header` (Theme: Header), `theme_content` (Theme: Content) and `theme_footer` (Theme: Footer).
 * Moves the core sections: Additional CSS to Global, Site Identity (renamed Branding) and Header Image to Header, and Homepage Settings to Content. It removes the Colors section; return `false` from the `backdrop/customize/remove_colors_section` filter to keep it.
 * Registers the `radio-image` control type (`Backdrop\Customize\Controls\RadioImage`) and prints its styles in the customizer.
+* Registers three built-in components: Layout, Footer credit and Featured image size. See [Built-in components](#built-in-components).
 * Calls your components so they can register their own panels, sections, settings, controls and partials.
 
 ## Usage
@@ -74,8 +75,38 @@ class Layout {
 
 Methods you don't need can be left out of a component only if the class defines all five, so extend or copy a base class that defines them as empty methods.
 
+## Built-in components
+Layout, Footer credit and Featured image size are registered for you, before your own components. Each one takes its settings from an array filter, and each can be turned off by returning `false` from its `enable` filter. A section, setting or control that your own component registers with the same ID replaces the built-in one.
+
+| Component | Settings | Arguments filter | Turn off |
+| --- | --- | --- | --- |
+| Layout | `{panel}_layout`, a radio image setting | `backdrop/customize/layout_args` | `backdrop/customize/enable_layout` |
+| Footer credit | `theme_footer_powered_by` and `theme_footer_custom_credit` in Theme: Footer, Credit | `backdrop/customize/footer_credit_args` | `backdrop/customize/enable_footer_credit` |
+| Featured image size | `theme_content_feature_image` in Theme: Content, Feature Image | `backdrop/customize/featured_image_args` | `backdrop/customize/enable_featured_image` |
+
+**Layout** needs your layouts, because the package can't know them or their images, so nothing is registered until you give `choices`. `panel` sets where it goes, `theme_content` by default, and the setting ID follows it: `theme_content_layout`, or `theme_global_layout` for `theme_global`. Set `id` to use another ID.
+
+```php
+add_filter( 'backdrop/customize/layout_args', function( $args ) {
+	$args['panel']   = 'theme_global';
+	$args['default'] = 'sidebar';
+	$args['choices'] = [
+		'sidebar' => [ 'label' => __( 'Sidebar', 'my-theme' ), 'url' => '%1$s/public/images/layout-sidebar.svg' ],
+		'full'    => [ 'label' => __( 'Full width', 'my-theme' ), 'url' => '%1$s/public/images/layout-full.svg' ],
+	];
+
+	return $args;
+} );
+```
+
+Layout also takes `title`, `priority`, `default` (the first choice if left out) and `transport`. The layout reloads the preview unless you set `transport` to `postMessage` and add a preview script.
+
+**Footer credit** takes `panel`, `section`, `title`, `priority`, `powered_by` (`false` leaves out the generated credit checkbox), `powered_by_default`, `powered_by_label`, `credit_default`, `credit_label` and `allowed_html` (the tags kept in the custom credit). Give `selector` and `render_callback` to update the credit in the preview without a reload. Without a callback the preview reloads. Your theme prints the credit.
+
+**Featured image size** takes `panel`, `id`, `title`, `label`, `priority`, `choices` and `default`. Without `choices` it offers every registered image size and `full`, and the default is `post-thumbnail`. Your theme reads the setting where it prints the image.
+
 ### Sanitize helpers
-`Backdrop\Customize\Helpers\Sanitize`: `choices()` (a value must be one of the control's choices), `layouts()` (same), `checkbox()` and `dropdown()` (the ID of a published page).
+`Backdrop\Customize\Helpers\Sanitize`: `choices()` (a value must be one of the control's choices), `layouts()` (same), `checkbox()`, `dropdown()` (the ID of a published page) and `html()` (text that keeps only the allowed tags).
 
 ## Tests
 ```

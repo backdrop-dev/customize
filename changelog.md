@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+Added
+* Built-in Layout, Footer credit and Featured image size components, registered before the theme's own components. Each takes its settings from a filter (`backdrop/customize/layout_args`, `backdrop/customize/footer_credit_args` and `backdrop/customize/featured_image_args`) and can be turned off by returning `false` from `backdrop/customize/enable_layout`, `backdrop/customize/enable_footer_credit` or `backdrop/customize/enable_featured_image`.
+* `Sanitize::html()`.
+
+Removed
+* The unused `BackgroundSvg` control. It was never registered.
+
 ## 1.0.3 - November 17, 2026
 Changed
 * The component now takes an array of customizable component classes, registers the panels `theme_global`, `theme_header`, `theme_content` and `theme_footer`, moves the core sections into them, and calls each component to register its own sections, settings, controls and partials. Use it from your own service provider, as in the readme.

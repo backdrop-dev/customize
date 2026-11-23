@@ -16,6 +16,9 @@ namespace Backdrop\Customize;
 
 use Backdrop\Contracts\Bootable;
 use Backdrop\Customize\Controls\RadioImage;
+use Backdrop\Customize\Defaults\FeaturedImage;
+use Backdrop\Customize\Defaults\FooterCredit;
+use Backdrop\Customize\Defaults\Layout;
 use WP_Customize_Manager;
 use Backdrop\Proxies\App;
 
@@ -32,6 +35,15 @@ class Component implements Bootable {
      * @var    array
      */
     protected $components = [];
+
+    /**
+     * The built-in components that are turned on. Built the first time it's needed.
+     *
+     * @since  1.0.4
+     * @access protected
+     * @var    array|null
+     */
+    protected $defaults = null;
 
     /**
      * Sets up initial object properties.
@@ -95,6 +107,11 @@ class Component implements Bootable {
 				] );
 		}
 
+		foreach ( $this->defaults() as $default ) {
+
+			$default->registerPanels( $manager );
+		}
+
 		foreach ( $this->components as $component ) {
 
 			App::resolve( $component )->registerPanels( $manager );
@@ -122,6 +139,11 @@ class Component implements Bootable {
             $manager->remove_section( 'colors' );
         }
 
+		foreach ( $this->defaults() as $default ) {
+
+			$default->registerSections( $manager );
+		}
+
 		foreach ( $this->components as $component ) {
 
 			App::resolve( $component )->registerSections( $manager );
@@ -138,6 +160,11 @@ class Component implements Bootable {
 	 * @return void
 	 */
     public function registerSettings( WP_Customize_Manager $manager ) {
+
+		foreach ( $this->defaults() as $default ) {
+
+			$default->registerSettings( $manager );
+		}
 
 		foreach ( $this->components as $component ) {
 
@@ -161,6 +188,11 @@ class Component implements Bootable {
             $manager->register_control_type( $control );
         }, $controls );
 
+		foreach ( $this->defaults() as $default ) {
+
+			$default->registerControls( $manager );
+		}
+
 		foreach ( $this->components as $component ) {
 
 			App::resolve( $component )->registerControls( $manager );
@@ -177,11 +209,50 @@ class Component implements Bootable {
 	 */
 	public function registerPartials( WP_Customize_Manager $manager ) {
 
+		foreach ( $this->defaults() as $default ) {
+
+			$default->registerPartials( $manager );
+		}
+
 		foreach ( $this->components as $component ) {
 
 			App::resolve( $component )->registerPartials( $manager );
 		}
 	}
+
+    /**
+     * Returns the built-in components: Layout, Footer credit and Featured image
+     * size. A theme turns one off by returning `false` from its filter:
+     * `backdrop/customize/enable_layout`, `backdrop/customize/enable_footer_credit`
+     * or `backdrop/customize/enable_featured_image`.
+     *
+     * They are registered before the theme's own components, so a theme that
+     * registers the same section, setting or control replaces the built-in one.
+     *
+     * @since  1.0.4
+     * @access protected
+     * @return array
+     */
+    protected function defaults(): array {
+
+        if ( null === $this->defaults ) {
+            $this->defaults = [];
+
+            if ( apply_filters( 'backdrop/customize/enable_layout', true ) ) {
+                $this->defaults[] = new Layout();
+            }
+
+            if ( apply_filters( 'backdrop/customize/enable_footer_credit', true ) ) {
+                $this->defaults[] = new FooterCredit();
+            }
+
+            if ( apply_filters( 'backdrop/customize/enable_featured_image', true ) ) {
+                $this->defaults[] = new FeaturedImage();
+            }
+        }
+
+        return $this->defaults;
+    }
 
     /**
      * Moves a core section into a panel, if the section exists.
