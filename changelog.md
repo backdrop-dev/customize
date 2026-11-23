@@ -1,8 +1,12 @@
 # Changelog
 
-## Unreleased
+## 1.0.6 - November 23, 2026
 Added
-* Typography loads the fonts it offers. A new `handles` argument (`backdrop/customize/typography_args`) names the `backdrop-dev/fonts` font behind each stack in `fonts`; the component enqueues the fonts the settings use on the front end and every listed font in the customizer preview. A font the fonts package can't load is left out of the list, so the control never offers a font that wouldn't show. A stack with no handle is never loaded, as before. `backdrop-dev/fonts` is a soft dependency.
+* Typography loads the fonts it offers. A new `handles` argument (`backdrop/customize/typography_args`) names the `backdrop-dev/fonts` font behind each stack in `fonts`. The component enqueues the fonts the settings use on the front end, and every listed font in the customizer preview, so a pick shows at once. A stack with no handle is never loaded, as before.
+* `backdrop-dev/fonts` is a soft dependency, like Chassis: it isn't in `composer.json`, and nothing changes without it.
+
+Changed
+* A font whose handle the fonts package can't load is left out of the font list, so the control never offers a font that wouldn't show. Before, a font listed in `fonts` was offered whether or not anything loaded it, and a theme that hadn't loaded it showed the system stack. Nothing changes for a theme that gives no `handles`.
 
 ## 1.0.5 - November 23, 2026
 Added
