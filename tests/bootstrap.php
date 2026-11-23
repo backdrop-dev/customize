@@ -22,7 +22,19 @@ namespace {
         public $id = '';
         public $choices = [];
         public $manager;
+        public function __construct( $manager = null, $id = '', $args = [] ) {
+            $this->manager = $manager;
+            $this->id      = $id;
+            foreach ( $args as $key => $value ) {
+                $this->$key = $value;
+            }
+        }
         protected function render_content() {}
+    }
+
+    class WP_Customize_Selective_Refresh {
+        public $partials = [];
+        public function add_partial( $id, $args ) { $this->partials[ $id ] = $args; }
     }
 
     class WP_Customize_Manager {
@@ -31,8 +43,10 @@ namespace {
         public $control_types = [];
         public $controls = [];
         public $settings = [];
+        public $selective_refresh;
 
         public function __construct() {
+            $this->selective_refresh = new WP_Customize_Selective_Refresh();
             foreach ( [ 'custom_css', 'title_tagline', 'static_front_page', 'colors', 'header_image' ] as $id ) {
                 $this->sections[ $id ] = (object) [ 'panel' => '', 'title' => $id, 'priority' => 160 ];
             }
@@ -42,9 +56,19 @@ namespace {
         public function remove_section( $id ) { unset( $this->sections[ $id ] ); }
         public function register_control_type( $class ) { $this->control_types[] = $class; }
         public function get_control( $id ) { return $this->controls[ $id ] ?? null; }
+        public function add_section( $id, $args ) { $this->sections[ $id ] = (object) $args; }
+        public function add_setting( $id, $args ) { $this->settings[ $id ] = $args; }
+        public function add_control( $control, $args = [] ) {
+            if ( ! is_object( $control ) ) {
+                $control = new WP_Customize_Control( $this, $control, $args );
+            }
+            $this->controls[ $control->id ] = $control;
+        }
     }
 
     function esc_html__( $s ) { return $s; }
+    function wp_kses( $s, $allowed ) { return strip_tags( $s, '<' . implode( '><', array_keys( $allowed ) ) . '>' ); }
+    function get_intermediate_image_sizes() { return [ 'thumbnail', 'medium', 'post-thumbnail' ]; }
     function absint( $n ) { return abs( (int) $n ); }
     function wp_validate_boolean( $v ) { return is_string( $v ) && 'false' === strtolower( $v ) ? false : (bool) $v; }
     function get_post_status( $id ) { return [ 5 => 'publish', 6 => 'private' ][ $id ] ?? false; }
