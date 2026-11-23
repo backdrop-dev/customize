@@ -314,6 +314,47 @@ add_filter( 'backdrop/customize/colors_args', function ( $args ) {
 $manager = register( new Component() );
 check( 'a theme can choose its colors', [ array_keys( $manager->settings ), $manager->controls['theme_color_accent']->label ], [ [ 'theme_color_accent', 'theme_type_body', 'theme_type_heading', 'theme_type_size', 'theme_type_line_height', 'theme_background_color' ], 'Brand' ] );
 
+// Loading the fonts a theme lists.
+$GLOBALS['fonts'] = [ 'fira-sans', 'lato' ];
+$fira  = "'Fira Sans', sans-serif";
+$lato  = "'Lato', sans-serif";
+$merri = "'Merriweather', serif";
+reset_filters();
+enable_chassis();
+add_filter( 'backdrop/customize/typography_args', function ( $args ) use ( $fira, $lato, $merri ) {
+    $args['fonts']   += [ $fira => 'Fira Sans', $lato => 'Lato', $merri => 'Merriweather' ];
+    $args['handles']  = [ $fira => 'fira-sans', $lato => 'lato', $merri => 'merriweather' ];
+    return $args;
+} );
+$manager = register( new Component() );
+$choices = array_keys( $manager->controls['theme_type_body']->choices );
+check( 'a font the fonts package has is offered', in_array( $fira, $choices, true ) && in_array( $lato, $choices, true ), true );
+check( 'a font the fonts package lacks is not offered', in_array( $merri, $choices, true ), false );
+check( 'a font that is not offered is dropped by sanitize', $manager->settings['theme_type_body']['sanitize_callback']( $merri ), '' );
+check( 'system stacks are still offered', count( $choices ), 1 + 3 + 2 );
+
+App::$services['chassis']->values['settings.font.body'] = $fira;
+$component = new Component();
+$GLOBALS['enqueued'] = [];
+$component->chassisFonts();
+check( 'only the font in use is loaded on the front end', $GLOBALS['enqueued'], [ 'fira-sans' ] );
+
+App::$services['chassis']->values['settings.font.heading'] = $lato;
+$GLOBALS['enqueued'] = [];
+( new Component() )->chassisFonts();
+check( 'each font in use is loaded once', $GLOBALS['enqueued'], [ 'fira-sans', 'lato' ] );
+
+$GLOBALS['preview'] = true;
+$GLOBALS['enqueued'] = [];
+( new Component() )->chassisFonts();
+check( 'every listed font is loaded in the preview', $GLOBALS['enqueued'], [ 'fira-sans', 'lato' ] );
+$GLOBALS['preview'] = false;
+
+reset_filters();
+$GLOBALS['enqueued'] = [];
+( new Component() )->chassisFonts();
+check( 'nothing loads while Typography is off', $GLOBALS['enqueued'], [] );
+
 // Off by default.
 reset_filters();
 $manager = register( new Component() );

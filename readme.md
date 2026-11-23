@@ -122,7 +122,7 @@ Chassis is a soft dependency: it isn't in `composer.json`, and without Chassis (
 
 Each control starts at the value Chassis has now for its path (from `chassis.json`). A setting that has never been changed overrides nothing, so the file keeps winning; once it is set, its value is returned from the `chassis/overrides` filter, and Chassis puts it on top of the file. Nothing is written to `chassis.json`.
 
-All three take `panel`, `section`, `title`, `priority`, `transport` and `fields`. A field is `[ 'path' => 'styles.color.accent', 'label' => 'Accent', 'type' => 'color' ]`, where `path` is one of the paths in `Chassis::stylesMap()` and `type` is `color`, `select`, `text` (a CSS length) or `number`; a path Chassis doesn't have is left out. Returning `fields` replaces the list, so a theme can drop the colors it doesn't use or add `settings.font.code`. Typography also takes `fonts`, the stacks the font controls offer as `[ 'CSS font-family' => 'Label' ]`; the stack the theme already has is added to the list.
+All three take `panel`, `section`, `title`, `priority`, `transport` and `fields`. A field is `[ 'path' => 'styles.color.accent', 'label' => 'Accent', 'type' => 'color' ]`, where `path` is one of the paths in `Chassis::stylesMap()` and `type` is `color`, `select`, `text` (a CSS length) or `number`; a path Chassis doesn't have is left out. Returning `fields` replaces the list, so a theme can drop the colors it doesn't use or add `settings.font.code`. Typography also takes `fonts`, the stacks the font controls offer as `[ 'CSS font-family' => 'Label' ]`; the stack the theme already has is added to the list. A font in the list only shows if the page loads it, so Typography also takes `handles`, `[ 'CSS font-family' => 'font-slug' ]`, for fonts from [`backdrop-dev/fonts`](https://github.com/backdrop-dev/fonts): the component loads the fonts the settings use (and every listed font in the customizer preview, so a pick shows at once), and leaves a font out of the list when the fonts package can't load it. A stack with no handle is never loaded, which suits system stacks and fonts the theme loads itself. End each stack with a generic family (`sans-serif`, `serif`) so a font that hasn't loaded yet falls back to a similar one.
 
 ```php
 add_filter( 'backdrop/customize/colors', '__return_true' );
@@ -132,6 +132,10 @@ add_filter( 'backdrop/customize/background', '__return_true' );
 add_filter( 'backdrop/customize/typography_args', function( $args ) {
 	$args['fonts']['"Fira Sans", sans-serif'] = 'Fira Sans';
 	$args['fonts']['Merriweather, serif']     = 'Merriweather';
+
+	// Loaded from backdrop-dev/fonts when picked.
+	$args['handles']['"Fira Sans", sans-serif'] = 'fira-sans';
+	$args['handles']['Merriweather, serif']     = 'merriweather';
 
 	return $args;
 } );

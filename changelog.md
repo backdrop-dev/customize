@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+Added
+* Typography loads the fonts it offers. A new `handles` argument (`backdrop/customize/typography_args`) names the `backdrop-dev/fonts` font behind each stack in `fonts`; the component enqueues the fonts the settings use on the front end and every listed font in the customizer preview. A font the fonts package can't load is left out of the list, so the control never offers a font that wouldn't show. A stack with no handle is never loaded, as before. `backdrop-dev/fonts` is a soft dependency.
+
 ## 1.0.5 - November 23, 2026
 Added
 * Built-in Colors, Typography and Background components (Background is the page color only) that write to Chassis's design. They are off until a theme returns `true` from `backdrop/customize/colors`, `backdrop/customize/typography` or `backdrop/customize/background`, take their settings from `backdrop/customize/colors_args`, `backdrop/customize/typography_args` and `backdrop/customize/background_args`, and register nothing without Chassis (a version with `overrides()`), which is a soft dependency. A changed setting is passed to Chassis through the `chassis/overrides` filter, so it wins over `chassis.json`; one that was never changed overrides nothing. They use `postMessage` with a live preview script the package prints.
