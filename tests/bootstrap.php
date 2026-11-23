@@ -20,6 +20,13 @@ namespace Backdrop\Proxies {
     }
 }
 
+namespace Backdrop\Fonts {
+    // The fonts package: `$GLOBALS['fonts']` lists the fonts it has; enqueued handles are logged.
+    function is_registered( string $handle ): bool { return in_array( $handle, $GLOBALS['fonts'] ?? [], true ); }
+    function asset_path( string $file = '' ): string { return '/nowhere/' . $file; }
+    function enqueue( string $handle, array $args = [] ): void { $GLOBALS['enqueued'][] = $handle; }
+}
+
 namespace {
     $GLOBALS['hooks'] = [];
 
@@ -74,6 +81,7 @@ namespace {
     }
 
     function esc_html__( $s ) { return $s; }
+    function is_customize_preview() { return ! empty( $GLOBALS['preview'] ); }
     function get_theme_mod( $name, $default = false ) { return $GLOBALS['mods'][ $name ] ?? $default; }
     function wp_json_encode( $v ) { return json_encode( $v ); }
     function wp_add_inline_script( $handle, $code ) { $GLOBALS['inline'][ $handle ][] = $code; }

@@ -88,6 +88,7 @@ class Component implements Bootable {
 
 		// The Chassis components pass their values to Chassis, and update the preview.
 		add_filter( 'chassis/overrides', [ $this, 'chassisOverrides' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'chassisFonts' ], 20 );
 		add_action( 'customize_preview_init', function() {
 			add_action( 'wp_enqueue_scripts', [ $this, 'chassisPreview' ], 20 );
 		} );
@@ -113,6 +114,23 @@ class Component implements Bootable {
 		}
 
 		return $overrides;
+	}
+
+	/**
+	 * Loads the fonts the Typography component's `handles` name, after Chassis has applied
+	 * the overrides (`wp_enqueue_scripts`, priority 5).
+	 *
+	 * @since  1.0.6
+	 * @access public
+	 * @return void
+	 */
+	public function chassisFonts() {
+
+		foreach ( $this->defaults() as $default ) {
+			if ( $default instanceof Typography ) {
+				$default->enqueueFonts();
+			}
+		}
 	}
 
 	/**
