@@ -105,7 +105,7 @@ function reset_filters(): void {
 
 function enable_all(): void {
     foreach ( [ 'layout', 'footer_credit', 'featured_image' ] as $name ) {
-        add_filter( "backdrop/customize/enable_{$name}", '__return_true' );
+        add_filter( "backdrop/customize/{$name}", '__return_true' );
     }
 }
 
@@ -207,7 +207,7 @@ add_filter( 'backdrop/customize/layout_args', function ( $args ) use ( $layouts 
     $args['choices'] = $layouts;
     return $args;
 } );
-add_filter( 'backdrop/customize/enable_footer_credit', '__return_true' );
+add_filter( 'backdrop/customize/footer_credit', '__return_true' );
 $manager = register( new Component() );
 check( 'turning one on leaves the others off', [ isset( $manager->sections['theme_content_layout'] ), isset( $manager->sections['theme_footer_credit'] ), isset( $manager->sections['theme_content_feature_image'] ) ], [ false, true, false ] );
 

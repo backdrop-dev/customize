@@ -222,8 +222,8 @@ class Component implements Bootable {
 
     /**
      * Returns the built-in components that the theme turned on. They are all off
-     * until a theme returns `true` from its filter: `backdrop/customize/enable_layout`,
-     * `backdrop/customize/enable_footer_credit` or `backdrop/customize/enable_featured_image`.
+     * until a theme returns `true` from its filter: `backdrop/customize/layout`,
+     * `backdrop/customize/footer_credit` or `backdrop/customize/featured_image`.
      *
      * They are registered before the theme's own components, so a theme that
      * registers the same section, setting or control replaces the built-in one.
@@ -237,15 +237,15 @@ class Component implements Bootable {
         if ( null === $this->defaults ) {
             $this->defaults = [];
 
-            if ( apply_filters( 'backdrop/customize/enable_layout', false ) ) {
+            if ( apply_filters( 'backdrop/customize/layout', false ) ) {
                 $this->defaults[] = new Layout();
             }
 
-            if ( apply_filters( 'backdrop/customize/enable_footer_credit', false ) ) {
+            if ( apply_filters( 'backdrop/customize/footer_credit', false ) ) {
                 $this->defaults[] = new FooterCredit();
             }
 
-            if ( apply_filters( 'backdrop/customize/enable_featured_image', false ) ) {
+            if ( apply_filters( 'backdrop/customize/featured_image', false ) ) {
                 $this->defaults[] = new FeaturedImage();
             }
         }
