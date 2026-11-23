@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+Added
+* Built-in Colors, Typography and Background components (Background is the page color only) that write to Chassis's design. They are off until a theme returns `true` from `backdrop/customize/colors`, `backdrop/customize/typography` or `backdrop/customize/background`, take their settings from `backdrop/customize/colors_args`, `backdrop/customize/typography_args` and `backdrop/customize/background_args`, and register nothing without Chassis (a version with `overrides()`), which is a soft dependency. A changed setting is passed to Chassis through the `chassis/overrides` filter, so it wins over `chassis.json`; one that was never changed overrides nothing. They use `postMessage` with a live preview script the package prints.
+* `Sanitize::color()`, `Sanitize::cssLength()` and `Sanitize::number()`.
+
 ## 1.0.4 - November 23, 2026
 Added
 * Built-in Layout, Footer credit and Featured image size components, registered before the theme's own components. All three are off until a theme returns `true` from `backdrop/customize/layout`, `backdrop/customize/footer_credit` or `backdrop/customize/featured_image`. Each takes its settings from a filter (`backdrop/customize/layout_args`, `backdrop/customize/footer_credit_args` and `backdrop/customize/featured_image_args`) and uses the `postMessage` transport, which each takes a `transport` argument to change.

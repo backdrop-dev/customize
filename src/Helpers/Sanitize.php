@@ -80,4 +80,48 @@ class Sanitize {
 
         return wp_kses( (string) $value, $allowed );
     }
+
+    /**
+     * Sanitizes a hex color (`#fff` or `#ffffff`). Anything else is an empty string,
+     * which means "no override".
+     *
+     * @param  mixed  $value
+     * @return string
+     */
+    public static function color( $value ): string {
+
+        $value = trim( (string) $value );
+
+        return preg_match( '/^#(?:[0-9a-fA-F]{3}){1,2}$/', $value ) ? strtolower( $value ) : '';
+    }
+
+    /**
+     * Sanitizes a CSS length such as `18px`, `1.125rem`, `110%` or `2.5em`. Anything
+     * else is an empty string.
+     *
+     * @param  mixed  $value
+     * @return string
+     */
+    public static function cssLength( $value ): string {
+
+        $value = trim( (string) $value );
+
+        return preg_match( '/^\d*\.?\d+(?:px|em|rem|%|ch|vw|vh)$/', $value ) ? $value : '';
+    }
+
+    /**
+     * Sanitizes a unitless number between 0.5 and 4, such as a line height. Anything
+     * else is an empty string.
+     *
+     * @param  mixed  $value
+     * @return string
+     */
+    public static function number( $value ): string {
+
+        if ( ! is_numeric( $value ) || $value < 0.5 || $value > 4 ) {
+            return '';
+        }
+
+        return (string) ( 0 + $value );
+    }
 }

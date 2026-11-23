@@ -16,9 +16,13 @@ namespace Backdrop\Customize;
 
 use Backdrop\Contracts\Bootable;
 use Backdrop\Customize\Controls\RadioImage;
+use Backdrop\Customize\Defaults\Background;
+use Backdrop\Customize\Defaults\ChassisBase;
+use Backdrop\Customize\Defaults\Colors;
 use Backdrop\Customize\Defaults\FeaturedImage;
 use Backdrop\Customize\Defaults\FooterCredit;
 use Backdrop\Customize\Defaults\Layout;
+use Backdrop\Customize\Defaults\Typography;
 use WP_Customize_Manager;
 use Backdrop\Proxies\App;
 
@@ -81,6 +85,67 @@ class Component implements Bootable {
 		] );
 
 		add_action( 'customize_controls_print_styles', [ $this, 'printStyles' ] );
+
+		// The Chassis components pass their values to Chassis, and update the preview.
+		add_filter( 'chassis/overrides', [ $this, 'chassisOverrides' ] );
+		add_action( 'customize_preview_init', function() {
+			add_action( 'wp_enqueue_scripts', [ $this, 'chassisPreview' ], 20 );
+		} );
+	}
+
+	/**
+	 * Adds the values of the Chassis components (Colors, Typography, Background) to the
+	 * overrides that Chassis applies on top of `chassis.json`.
+	 *
+	 * @since  1.1.0
+	 * @access public
+	 * @param  array  $overrides
+	 * @return array
+	 */
+	public function chassisOverrides( $overrides ) {
+
+		$overrides = is_array( $overrides ) ? $overrides : [];
+
+		foreach ( $this->defaults() as $default ) {
+			if ( $default instanceof ChassisBase ) {
+				$overrides = $default->overrides( $overrides );
+			}
+		}
+
+		return $overrides;
+	}
+
+	/**
+	 * Updates the custom properties in the preview as the settings change, for the Chassis
+	 * components whose transport is `postMessage`. An empty value takes the inline property
+	 * off, so the design from `chassis.json` shows again.
+	 *
+	 * @since  1.1.0
+	 * @access public
+	 * @return void
+	 */
+	public function chassisPreview() {
+
+		$properties = [];
+
+		foreach ( $this->defaults() as $default ) {
+			if ( $default instanceof ChassisBase && 'postMessage' === $default->transport() ) {
+				$properties += $default->properties();
+			}
+		}
+
+		if ( ! $properties ) {
+			return;
+		}
+
+		$script = 'var properties = ' . wp_json_encode( $properties ) . ';'
+			. ' Object.keys( properties ).forEach( function( id ) {'
+			. ' wp.customize( id, function( setting ) {'
+			. ' setting.bind( function( value ) {'
+			. ' document.documentElement.style.setProperty( "--" + properties[ id ], value );'
+			. ' } ); } ); } );';
+
+		wp_add_inline_script( 'customize-preview', $script );
 	}
 
     /**
@@ -247,6 +312,19 @@ class Component implements Bootable {
 
             if ( apply_filters( 'backdrop/customize/featured_image', false ) ) {
                 $this->defaults[] = new FeaturedImage();
+            }
+
+            // These write to Chassis, and register nothing without it.
+            if ( apply_filters( 'backdrop/customize/colors', false ) ) {
+                $this->defaults[] = new Colors();
+            }
+
+            if ( apply_filters( 'backdrop/customize/typography', false ) ) {
+                $this->defaults[] = new Typography();
+            }
+
+            if ( apply_filters( 'backdrop/customize/background', false ) ) {
+                $this->defaults[] = new Background();
             }
         }
 
