@@ -2,7 +2,7 @@
 
 ## Unreleased
 Added
-* Built-in Layout, Footer credit and Featured image size components, registered before the theme's own components. Each takes its settings from a filter (`backdrop/customize/layout_args`, `backdrop/customize/footer_credit_args` and `backdrop/customize/featured_image_args`) and can be turned off by returning `false` from `backdrop/customize/enable_layout`, `backdrop/customize/enable_footer_credit` or `backdrop/customize/enable_featured_image`.
+* Built-in Layout, Footer credit and Featured image size components, registered before the theme's own components. Each takes its settings from a filter (`backdrop/customize/layout_args`, `backdrop/customize/footer_credit_args` and `backdrop/customize/featured_image_args`) use the `postMessage` transport (each takes a `transport` argument to change that), and can be turned off by returning `false` from `backdrop/customize/enable_layout`, `backdrop/customize/enable_footer_credit` or `backdrop/customize/enable_featured_image`.
 * `Sanitize::html()`.
 
 Removed

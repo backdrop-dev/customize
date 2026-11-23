@@ -99,11 +99,13 @@ add_filter( 'backdrop/customize/layout_args', function( $args ) {
 } );
 ```
 
-Layout also takes `title`, `priority`, `default` (the first choice if left out) and `transport`. The layout reloads the preview unless you set `transport` to `postMessage` and add a preview script.
+Layout also takes `title`, `priority`, `default` (the first choice if left out) and `transport`.
 
-**Footer credit** takes `panel`, `section`, `title`, `priority`, `powered_by` (`false` leaves out the generated credit checkbox), `powered_by_default`, `powered_by_label`, `credit_default`, `credit_label` and `allowed_html` (the tags kept in the custom credit). Give `selector` and `render_callback` to update the credit in the preview without a reload. Without a callback the preview reloads. Your theme prints the credit.
+**Footer credit** takes `panel`, `section`, `title`, `priority`, `powered_by` (`false` leaves out the generated credit checkbox), `powered_by_default`, `powered_by_label`, `credit_default`, `credit_label` and `allowed_html` (the tags kept in the custom credit). Give `selector` and `render_callback` to update the credit in the preview without a reload. Your theme prints the credit.
 
 **Featured image size** takes `panel`, `id`, `title`, `label`, `priority`, `choices` and `default`. Without `choices` it offers every registered image size and `full`, and the default is `post-thumbnail`. Your theme reads the setting where it prints the image.
+
+**Preview:** all three settings use the `postMessage` transport by default, so the preview doesn't reload when they change. Footer credit updates the preview itself once it has a `selector` and `render_callback`. Layout and Featured image size need a preview script in your theme that listens to the setting with `wp.customize()`. Until there is one, the preview doesn't show the change until the setting is saved. Each component takes a `transport` argument, and `refresh` reloads the preview instead.
 
 ### Sanitize helpers
 `Backdrop\Customize\Helpers\Sanitize`: `choices()` (a value must be one of the control's choices), `layouts()` (same), `checkbox()`, `dropdown()` (the ID of a published page) and `html()` (text that keeps only the allowed tags).

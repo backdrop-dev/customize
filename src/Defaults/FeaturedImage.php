@@ -42,6 +42,9 @@ class FeaturedImage extends Base {
      *               registered image size is offered, plus `full`.
      * * `default`   The default size. Default is `post-thumbnail`, or the first
      *               choice if that isn't one of them.
+     * * `transport` `postMessage` by default, so the theme needs a preview script
+     *               that listens to the setting. Use `refresh` to reload the
+     *               preview instead.
      *
      * @return array
      */
@@ -55,6 +58,7 @@ class FeaturedImage extends Base {
             'priority' => null,
             'choices'  => [],
             'default'  => 'post-thumbnail',
+            'transport' => 'postMessage',
         ];
     }
 
@@ -121,7 +125,7 @@ class FeaturedImage extends Base {
         $manager->add_setting( $this->args()['id'], [
             'default'           => $this->defaultChoice(),
             'sanitize_callback' => [ Sanitize::class, 'choices' ],
-            'transport'         => 'refresh',
+            'transport'         => $this->args()['transport'],
         ] );
     }
 
