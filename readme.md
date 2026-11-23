@@ -76,9 +76,9 @@ class Layout {
 Methods you don't need can be left out of a component only if the class defines all five, so extend or copy a base class that defines them as empty methods.
 
 ## Built-in components
-Layout, Footer credit and Featured image size are registered for you, before your own components. Each one takes its settings from an array filter, and each can be turned off by returning `false` from its `enable` filter. A section, setting or control that your own component registers with the same ID replaces the built-in one.
+Layout, Footer credit and Featured image size are built in, and all three are off until your theme turns them on, so a theme only gets the sections it uses. Turn one on by returning `true` from its `enable` filter. Each one takes its settings from an array filter. They register before your own components, and a section, setting or control that your own component registers with the same ID replaces the built-in one.
 
-| Component | Settings | Arguments filter | Turn off |
+| Component | Settings | Arguments filter | Turn on |
 | --- | --- | --- | --- |
 | Layout | `{panel}_layout`, a radio image setting | `backdrop/customize/layout_args` | `backdrop/customize/enable_layout` |
 | Footer credit | `theme_footer_powered_by` and `theme_footer_custom_credit` in Theme: Footer, Credit | `backdrop/customize/footer_credit_args` | `backdrop/customize/enable_footer_credit` |
@@ -87,6 +87,8 @@ Layout, Footer credit and Featured image size are registered for you, before you
 **Layout** needs your layouts, because the package can't know them or their images, so nothing is registered until you give `choices`. `panel` sets where it goes, `theme_content` by default, and the setting ID follows it: `theme_content_layout`, or `theme_global_layout` for `theme_global`. Set `id` to use another ID.
 
 ```php
+add_filter( 'backdrop/customize/enable_layout', '__return_true' );
+
 add_filter( 'backdrop/customize/layout_args', function( $args ) {
 	$args['panel']   = 'theme_global';
 	$args['default'] = 'sidebar';

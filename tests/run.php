@@ -60,6 +60,7 @@ check( 'missing core section is skipped', $ok, true );
 // The Colors section can be kept.
 add_filter( 'backdrop/customize/remove_colors_section', '__return_false' );
 function __return_false() { return false; }
+function __return_true() { return true; }
 $manager = new WP_Customize_Manager();
 $component->registerSections( $manager );
 check( 'colors section can be kept with a filter', isset( $manager->sections['colors'] ), true );
@@ -102,13 +103,25 @@ function reset_filters(): void {
     }
 }
 
+function enable_all(): void {
+    foreach ( [ 'layout', 'footer_credit', 'featured_image' ] as $name ) {
+        add_filter( "backdrop/customize/enable_{$name}", '__return_true' );
+    }
+}
+
 $layouts = [
     'left'  => [ 'label' => 'Left',  'url' => '%1$s/left.png' ],
     'right' => [ 'label' => 'Right', 'url' => '%1$s/right.png' ],
 ];
 
-// With no filters: Footer credit and Featured image size are registered, Layout waits for choices.
+// With no filters nothing is registered.
 reset_filters();
+$manager = register( new Component() );
+check( 'built-in components are off by default', [ isset( $manager->sections['theme_content_layout'] ), isset( $manager->sections['theme_footer_credit'] ), isset( $manager->sections['theme_content_feature_image'] ), $manager->settings ], [ false, false, false, [] ] );
+
+// Turned on with no other filters: Footer credit and Featured image size are registered, Layout waits for choices.
+reset_filters();
+enable_all();
 $manager = register( new Component() );
 check( 'layout waits for choices', isset( $manager->sections['theme_content_layout'] ), false );
 check( 'footer credit section', [ $manager->sections['theme_footer_credit']->panel, $manager->sections['theme_footer_credit']->title ], [ 'theme_footer', 'Credit' ] );
@@ -134,6 +147,7 @@ check( 'layout uses postMessage by default', $manager->settings['theme_content_l
 check( 'layout uses the radio image control', $manager->controls['theme_content_layout'] instanceof RadioImageControl, true );
 
 reset_filters();
+enable_all();
 add_filter( 'backdrop/customize/layout_args', function ( $args ) use ( $layouts ) {
     $args['panel']     = 'theme_global';
     $args['choices']   = $layouts;
@@ -152,6 +166,7 @@ check( 'layout setting rejects anything else', call_user_func( $manager->setting
 
 // Footer credit with a render callback and no generated credit.
 reset_filters();
+enable_all();
 add_filter( 'backdrop/customize/footer_credit_args', function ( $args ) {
     $args['powered_by']      = false;
     $args['credit_default']  = 'Copyright';
@@ -174,6 +189,7 @@ check( 'footer credit transport can be changed', $manager->settings['theme_foote
 
 // Featured image with the theme's own sizes.
 reset_filters();
+enable_all();
 add_filter( 'backdrop/customize/featured_image_args', function ( $args ) {
     $args['transport'] = 'refresh';
     $args['choices'] = [ 'small' => 'Small', 'large' => 'Large' ];
@@ -185,25 +201,19 @@ check( 'featured image uses the theme sizes', array_keys( $manager->controls['th
 check( 'featured image transport can be changed', $manager->settings['theme_content_feature_image']['transport'], 'refresh' );
 check( 'featured image default from the theme', $manager->settings['theme_content_feature_image']['default'], 'large' );
 
-// Each built-in component can be turned off.
+// Each built-in component is turned on on its own.
 reset_filters();
 add_filter( 'backdrop/customize/layout_args', function ( $args ) use ( $layouts ) {
     $args['choices'] = $layouts;
     return $args;
 } );
-add_filter( 'backdrop/customize/enable_layout', '__return_false' );
-add_filter( 'backdrop/customize/enable_footer_credit', '__return_false' );
-add_filter( 'backdrop/customize/enable_featured_image', '__return_false' );
+add_filter( 'backdrop/customize/enable_footer_credit', '__return_true' );
 $manager = register( new Component() );
-check( 'built-in components can be turned off', [ isset( $manager->sections['theme_content_layout'] ), isset( $manager->sections['theme_footer_credit'] ), isset( $manager->sections['theme_content_feature_image'] ) ], [ false, false, false ] );
-
-reset_filters();
-add_filter( 'backdrop/customize/enable_footer_credit', '__return_false' );
-$manager = register( new Component() );
-check( 'turning one off leaves the others', [ isset( $manager->sections['theme_footer_credit'] ), isset( $manager->sections['theme_content_feature_image'] ) ], [ false, true ] );
+check( 'turning one on leaves the others off', [ isset( $manager->sections['theme_content_layout'] ), isset( $manager->sections['theme_footer_credit'] ), isset( $manager->sections['theme_content_feature_image'] ) ], [ false, true, false ] );
 
 // A theme's own component registers after the built-in ones, so it replaces them.
 reset_filters();
+enable_all();
 class ThemeFooter extends Fake {
     public function registerSections( $m ) { $m->add_section( 'theme_footer_credit', [ 'panel' => 'theme_footer', 'title' => 'Mine' ] ); }
 }
