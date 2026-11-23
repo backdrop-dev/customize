@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.4 - November 23, 2026
 Added
 * Built-in Layout, Footer credit and Featured image size components, registered before the theme's own components. All three are off until a theme returns `true` from `backdrop/customize/layout`, `backdrop/customize/footer_credit` or `backdrop/customize/featured_image`. Each takes its settings from a filter (`backdrop/customize/layout_args`, `backdrop/customize/footer_credit_args` and `backdrop/customize/featured_image_args`) and uses the `postMessage` transport, which each takes a `transport` argument to change.
 * `Sanitize::html()`.
