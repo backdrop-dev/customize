@@ -76,17 +76,19 @@ class Layout {
 Methods you don't need can be left out of a component only if the class defines all five, so extend or copy a base class that defines them as empty methods.
 
 ## Built-in components
-Layout, Footer credit and Featured image size are registered for you, before your own components. Each one takes its settings from an array filter, and each can be turned off by returning `false` from its `enable` filter. A section, setting or control that your own component registers with the same ID replaces the built-in one.
+Layout, Footer credit and Featured image size are built in, and all three are off until your theme turns them on, so a theme only gets the sections it uses. Turn one on by returning `true` from its filter (`backdrop/customize/layout`, `backdrop/customize/footer_credit` or `backdrop/customize/featured_image`). Each one takes its settings from an array filter. They register before your own components, and a section, setting or control that your own component registers with the same ID replaces the built-in one.
 
-| Component | Settings | Arguments filter | Turn off |
+| Component | Settings | Arguments filter | Turn on |
 | --- | --- | --- | --- |
-| Layout | `{panel}_layout`, a radio image setting | `backdrop/customize/layout_args` | `backdrop/customize/enable_layout` |
-| Footer credit | `theme_footer_powered_by` and `theme_footer_custom_credit` in Theme: Footer, Credit | `backdrop/customize/footer_credit_args` | `backdrop/customize/enable_footer_credit` |
-| Featured image size | `theme_content_feature_image` in Theme: Content, Feature Image | `backdrop/customize/featured_image_args` | `backdrop/customize/enable_featured_image` |
+| Layout | `{panel}_layout`, a radio image setting | `backdrop/customize/layout_args` | `backdrop/customize/layout` |
+| Footer credit | `theme_footer_powered_by` and `theme_footer_custom_credit` in Theme: Footer, Credit | `backdrop/customize/footer_credit_args` | `backdrop/customize/footer_credit` |
+| Featured image size | `theme_content_feature_image` in Theme: Content, Feature Image | `backdrop/customize/featured_image_args` | `backdrop/customize/featured_image` |
 
 **Layout** needs your layouts, because the package can't know them or their images, so nothing is registered until you give `choices`. `panel` sets where it goes, `theme_content` by default, and the setting ID follows it: `theme_content_layout`, or `theme_global_layout` for `theme_global`. Set `id` to use another ID.
 
 ```php
+add_filter( 'backdrop/customize/layout', '__return_true' );
+
 add_filter( 'backdrop/customize/layout_args', function( $args ) {
 	$args['panel']   = 'theme_global';
 	$args['default'] = 'sidebar';
@@ -99,11 +101,13 @@ add_filter( 'backdrop/customize/layout_args', function( $args ) {
 } );
 ```
 
-Layout also takes `title`, `priority`, `default` (the first choice if left out) and `transport`. The layout reloads the preview unless you set `transport` to `postMessage` and add a preview script.
+Layout also takes `title`, `priority`, `default` (the first choice if left out) and `transport`.
 
-**Footer credit** takes `panel`, `section`, `title`, `priority`, `powered_by` (`false` leaves out the generated credit checkbox), `powered_by_default`, `powered_by_label`, `credit_default`, `credit_label` and `allowed_html` (the tags kept in the custom credit). Give `selector` and `render_callback` to update the credit in the preview without a reload. Without a callback the preview reloads. Your theme prints the credit.
+**Footer credit** takes `panel`, `section`, `title`, `priority`, `powered_by` (`false` leaves out the generated credit checkbox), `powered_by_default`, `powered_by_label`, `credit_default`, `credit_label` and `allowed_html` (the tags kept in the custom credit). Give `selector` and `render_callback` to update the credit in the preview without a reload. Your theme prints the credit.
 
 **Featured image size** takes `panel`, `id`, `title`, `label`, `priority`, `choices` and `default`. Without `choices` it offers every registered image size and `full`, and the default is `post-thumbnail`. Your theme reads the setting where it prints the image.
+
+**Preview:** all three settings use the `postMessage` transport by default, so the preview doesn't reload when they change. Footer credit updates the preview itself once it has a `selector` and `render_callback`. Layout and Featured image size need a preview script in your theme that listens to the setting with `wp.customize()`. Until there is one, the preview doesn't show the change until the setting is saved. Each component takes a `transport` argument, and `refresh` reloads the preview instead.
 
 ### Sanitize helpers
 `Backdrop\Customize\Helpers\Sanitize`: `choices()` (a value must be one of the control's choices), `layouts()` (same), `checkbox()`, `dropdown()` (the ID of a published page) and `html()` (text that keeps only the allowed tags).

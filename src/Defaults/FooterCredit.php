@@ -46,7 +46,11 @@ class FooterCredit extends Base {
      * * `selector`            The CSS selector of the credit in the footer.
      * * `render_callback`     Returns the credit markup. With a selector and a
      *                         callback the credit updates without reloading the
-     *                         preview. Without them the preview reloads.
+     *                         preview.
+     * * `transport`           `postMessage` by default. Without a selector and a
+     *                         callback nothing updates the preview, so it only
+     *                         shows the change after the setting is saved. Use
+     *                         `refresh` to reload the preview instead.
      *
      * The settings are `theme_footer_powered_by` and `theme_footer_custom_credit`.
      *
@@ -78,6 +82,7 @@ class FooterCredit extends Base {
             ],
             'selector'           => '.app-footer__credit',
             'render_callback'    => null,
+            'transport'          => 'postMessage',
         ];
     }
 
@@ -98,7 +103,7 @@ class FooterCredit extends Base {
      */
     protected function transport(): string {
 
-        return $this->hasPartial() ? 'postMessage' : 'refresh';
+        return $this->args()['transport'];
     }
 
     /**

@@ -44,7 +44,8 @@ class Layout extends Base {
      *               `url` works like the `RadioImage` control's. Without choices
      *               the component registers nothing.
      * * `default`   The default layout. Default is the first choice.
-     * * `transport` `refresh`, or `postMessage` if the theme has a preview script.
+     * * `transport` `postMessage` by default, so the theme needs a preview script that
+     *               listens to the setting. Use `refresh` to reload the preview instead.
      *
      * @return array
      */
@@ -57,7 +58,7 @@ class Layout extends Base {
             'priority'  => 10,
             'choices'   => [],
             'default'   => '',
-            'transport' => 'refresh',
+            'transport' => 'postMessage',
         ];
     }
 
