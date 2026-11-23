@@ -223,5 +223,101 @@ check( 'a theme section replaces the built-in one', $manager->sections['theme_fo
 
 check( 'html keeps allowed tags', Sanitize::html( '<em>a</em><iframe></iframe>', [ 'em' => [] ] ), '<em>a</em>' );
 
+
+// Chassis components: a stand-in for Chassis's override layer.
+class FakeChassis {
+    public static function stylesMap(): array {
+        return [
+            'styles.color.accent'     => [ 'color-accent', false ],
+            'styles.color.text'       => [ 'color-content-text', false ],
+            'styles.color.background' => [ 'color-page-background', false ],
+            'settings.font.body'      => [ 'font-family-body', false ],
+            'settings.font.heading'   => [ 'font-family-heading', false ],
+            'styles.typography.size'  => [ 'font-size-base', false ],
+            'styles.typography.line-height' => [ 'line-height-base', false ],
+        ];
+    }
+    public $values = [ 'styles.color.accent' => '#334155', 'settings.font.body' => 'Fira Sans, sans-serif' ];
+    public function value( string $path ) { return $this->values[ $path ] ?? null; }
+    public function overrides( array $values ) { return $this; }
+}
+
+function own_sections( WP_Customize_Manager $m ): array {
+    return array_values( array_filter( array_keys( $m->sections ), function ( $id ) { return 0 === strpos( $id, 'theme_global_' ); } ) );
+}
+
+function enable_chassis(): void {
+    foreach ( [ 'colors', 'typography', 'background' ] as $name ) {
+        add_filter( "backdrop/customize/{$name}", '__return_true' );
+    }
+}
+
+reset_filters();
+enable_chassis();
+unset( App::$services['chassis'] );
+$manager = register( new Component() );
+check( 'the Chassis components register nothing without Chassis', [ own_sections( $manager ), $manager->settings ], [ [], [] ] );
+
+App::$services['chassis'] = new FakeChassis();
+$manager = register( new Component() );
+check( 'Colors, Typography and Background add their sections', own_sections( $manager ), [ 'theme_global_colors', 'theme_global_typography', 'theme_global_background' ] );
+check( 'the sections go in the Global panel', $manager->sections['theme_global_colors']->panel, 'theme_global' );
+check( 'a color starts at the value Chassis has', $manager->settings['theme_color_accent']['default'], '#334155' );
+check( 'a color Chassis has no value for starts empty', $manager->settings['theme_color_text']['default'], '' );
+check( 'only fields Chassis knows are registered', isset( $manager->settings['theme_color_muted'] ), false );
+check( 'the page background is its own setting', isset( $manager->settings['theme_background_color'] ), true );
+check( 'the color control is a color control', get_class( $manager->controls['theme_color_accent'] ), 'WP_Customize_Color_Control' );
+check( 'Chassis settings preview live by default', $manager->settings['theme_color_accent']['transport'], 'postMessage' );
+check( 'the font control shows the theme default font first', array_keys( $manager->controls['theme_type_body']->choices )[0], 'Fira Sans, sans-serif' );
+check( 'the font list has the system stacks too', count( $manager->controls['theme_type_body']->choices ), 4 );
+check( 'the line height is a number control', $manager->controls['theme_type_line_height']->type, 'number' );
+
+$sanitize = $manager->settings['theme_color_accent']['sanitize_callback'];
+check( 'color sanitize keeps a hex color', $sanitize( '#CC3300' ), '#cc3300' );
+check( 'color sanitize drops anything else', $sanitize( 'red; background: url(x)' ), '' );
+$sanitize = $manager->settings['theme_type_body']['sanitize_callback'];
+check( 'font sanitize keeps a listed stack', $sanitize( 'Georgia, "Times New Roman", Times, serif' ), 'Georgia, "Times New Roman", Times, serif' );
+check( 'font sanitize drops an unlisted stack', $sanitize( 'x; y' ), '' );
+check( 'length sanitize keeps a length', Sanitize::cssLength( '1.125rem' ), '1.125rem' );
+check( 'length sanitize drops a bare number', Sanitize::cssLength( '16' ), '' );
+check( 'number sanitize keeps a line height', Sanitize::number( '1.6' ), '1.6' );
+check( 'number sanitize drops a value out of range', Sanitize::number( '12' ), '' );
+
+// Passing the settings on to Chassis.
+$GLOBALS['mods'] = [ 'theme_color_accent' => '#cc3300', 'theme_color_text' => 'nope', 'theme_background_color' => '#ffffff', 'theme_type_size' => '18px', 'theme_type_line_height' => '1.7' ];
+$component = new Component();
+$overrides = $component->chassisOverrides( [] );
+ksort( $overrides );
+check( 'changed settings become overrides by path', $overrides, [
+    'styles.color.accent'           => '#cc3300',
+    'styles.color.background'       => '#ffffff',
+    'styles.typography.line-height' => '1.7',
+    'styles.typography.size'        => '18px',
+] );
+check( 'overrides from other sources are kept', $component->chassisOverrides( [ 'x.y' => '1' ] )['x.y'], '1' );
+$GLOBALS['mods'] = [];
+check( 'settings that were never changed override nothing', $component->chassisOverrides( [] ), [] );
+
+// The live preview.
+$GLOBALS['inline'] = [];
+$component->chassisPreview();
+$script = $GLOBALS['inline']['customize-preview'][0] ?? '';
+check( 'the preview script maps each setting to its custom property', ( false !== strpos( $script, '"theme_color_accent":"color-accent"' ) ) && ( false !== strpos( $script, '"theme_background_color":"color-page-background"' ) ), true );
+
+// A theme can change the list of fields.
+reset_filters();
+enable_chassis();
+add_filter( 'backdrop/customize/colors_args', function ( $args ) {
+    $args['fields'] = [ 'accent' => [ 'path' => 'styles.color.accent', 'label' => 'Brand' ] ];
+    return $args;
+} );
+$manager = register( new Component() );
+check( 'a theme can choose its colors', [ array_keys( $manager->settings ), $manager->controls['theme_color_accent']->label ], [ [ 'theme_color_accent', 'theme_type_body', 'theme_type_heading', 'theme_type_size', 'theme_type_line_height', 'theme_background_color' ], 'Brand' ] );
+
+// Off by default.
+reset_filters();
+$manager = register( new Component() );
+check( 'the Chassis components are off by default', [ own_sections( $manager ), $manager->settings ], [ [], [] ] );
+
 echo $failed ? "\n{$failed} failed\n" : "\nAll passed\n";
 exit( $failed ? 1 : 0 );

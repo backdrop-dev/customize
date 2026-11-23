@@ -14,7 +14,7 @@ composer require backdrop-dev/customize
 * Registers the panels `theme_global` (Theme: Global), `theme_header` (Theme: Header), `theme_content` (Theme: Content) and `theme_footer` (Theme: Footer).
 * Moves the core sections: Additional CSS to Global, Site Identity (renamed Branding) and Header Image to Header, and Homepage Settings to Content. It removes the Colors section; return `false` from the `backdrop/customize/remove_colors_section` filter to keep it.
 * Registers the `radio-image` control type (`Backdrop\Customize\Controls\RadioImage`) and prints its styles in the customizer.
-* Registers three built-in components: Layout, Footer credit and Featured image size. See [Built-in components](#built-in-components).
+* Registers built-in components: Layout, Footer credit and Featured image size, plus Colors, Typography and Background for themes that use [Chassis](https://github.com/techkodeninja/chassis). See [Built-in components](#built-in-components) and [Chassis components](#chassis-components).
 * Calls your components so they can register their own panels, sections, settings, controls and partials.
 
 ## Usage
@@ -109,8 +109,38 @@ Layout also takes `title`, `priority`, `default` (the first choice if left out) 
 
 **Preview:** all three settings use the `postMessage` transport by default, so the preview doesn't reload when they change. Footer credit updates the preview itself once it has a `selector` and `render_callback`. Layout and Featured image size need a preview script in your theme that listens to the setting with `wp.customize()`. Until there is one, the preview doesn't show the change until the setting is saved. Each component takes a `transport` argument, and `refresh` reloads the preview instead.
 
+### Chassis components
+Colors, Typography and Background write to [Chassis](https://github.com/techkodeninja/chassis)'s design (the custom properties that `chassis.json` sets), so a theme that uses Chassis can offer them without writing the controls. They are off until a theme returns `true` from `backdrop/customize/colors`, `backdrop/customize/typography` or `backdrop/customize/background`, and they take their settings from `backdrop/customize/colors_args`, `backdrop/customize/typography_args` and `backdrop/customize/background_args`.
+
+Chassis is a soft dependency: it isn't in `composer.json`, and without Chassis (a version with `overrides()`, registered in the container as `chassis`, which `Techkodeninja\Chassis\Providers\Backdrop` does) these components register nothing. They are not for an editor palette: ClassicPress has no block editor.
+
+| Component | Section | Settings |
+| --- | --- | --- |
+| Colors | Theme: Global, Colors (`theme_global_colors`) | `theme_color_{key}`: text, muted text, dividers, alternate background, accent, text on accent, links, links on hover, headings, header and footer colors |
+| Typography | Theme: Global, Typography (`theme_global_typography`) | `theme_type_{key}`: body font, heading font, base font size, line height |
+| Background | Theme: Global, Background (`theme_global_background`) | `theme_background_color`, the page background color; no image |
+
+Each control starts at the value Chassis has now for its path (from `chassis.json`). A setting that has never been changed overrides nothing, so the file keeps winning; once it is set, its value is returned from the `chassis/overrides` filter, and Chassis puts it on top of the file. Nothing is written to `chassis.json`.
+
+All three take `panel`, `section`, `title`, `priority`, `transport` and `fields`. A field is `[ 'path' => 'styles.color.accent', 'label' => 'Accent', 'type' => 'color' ]`, where `path` is one of the paths in `Chassis::stylesMap()` and `type` is `color`, `select`, `text` (a CSS length) or `number`; a path Chassis doesn't have is left out. Returning `fields` replaces the list, so a theme can drop the colors it doesn't use or add `settings.font.code`. Typography also takes `fonts`, the stacks the font controls offer as `[ 'CSS font-family' => 'Label' ]`; the stack the theme already has is added to the list.
+
+```php
+add_filter( 'backdrop/customize/colors', '__return_true' );
+add_filter( 'backdrop/customize/typography', '__return_true' );
+add_filter( 'backdrop/customize/background', '__return_true' );
+
+add_filter( 'backdrop/customize/typography_args', function( $args ) {
+	$args['fonts']['"Fira Sans", sans-serif'] = 'Fira Sans';
+	$args['fonts']['Merriweather, serif']     = 'Merriweather';
+
+	return $args;
+} );
+```
+
+**Preview:** the transport is `postMessage` by default, and the package adds the script that sets the custom property in the preview as the setting changes. Use `refresh` to reload the preview instead.
+
 ### Sanitize helpers
-`Backdrop\Customize\Helpers\Sanitize`: `choices()` (a value must be one of the control's choices), `layouts()` (same), `checkbox()`, `dropdown()` (the ID of a published page) and `html()` (text that keeps only the allowed tags).
+`Backdrop\Customize\Helpers\Sanitize`: `choices()` (a value must be one of the control's choices), `layouts()` (same), `checkbox()`, `dropdown()` (the ID of a published page) `html()` (text that keeps only the allowed tags), `color()` (a hex color), `cssLength()` (such as `1.125rem`) and `number()` (a number from 0.5 to 4).
 
 ## Tests
 ```

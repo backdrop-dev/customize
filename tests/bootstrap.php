@@ -11,7 +11,12 @@ namespace Backdrop\Contracts {
 namespace Backdrop\Proxies {
     class App {
         public static $services = [];
-        public static function resolve( string $abstract ) { return static::$services[ $abstract ]; }
+        public static function resolve( string $abstract ) {
+            if ( ! isset( static::$services[ $abstract ] ) ) {
+                throw new \RuntimeException( "No service {$abstract}" );
+            }
+            return static::$services[ $abstract ];
+        }
     }
 }
 
@@ -36,6 +41,8 @@ namespace {
         public $partials = [];
         public function add_partial( $id, $args ) { $this->partials[ $id ] = $args; }
     }
+
+    class WP_Customize_Color_Control extends WP_Customize_Control {}
 
     class WP_Customize_Manager {
         public $panels = [];
@@ -67,6 +74,9 @@ namespace {
     }
 
     function esc_html__( $s ) { return $s; }
+    function get_theme_mod( $name, $default = false ) { return $GLOBALS['mods'][ $name ] ?? $default; }
+    function wp_json_encode( $v ) { return json_encode( $v ); }
+    function wp_add_inline_script( $handle, $code ) { $GLOBALS['inline'][ $handle ][] = $code; }
     function wp_kses( $s, $allowed ) { return strip_tags( $s, '<' . implode( '><', array_keys( $allowed ) ) . '>' ); }
     function get_intermediate_image_sizes() { return [ 'thumbnail', 'medium', 'post-thumbnail' ]; }
     function absint( $n ) { return abs( (int) $n ); }
